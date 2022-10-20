@@ -7,7 +7,7 @@ const {
 
 const router = require("express").Router();
 
-router.post("/", verifyTokenAndAdmin, async (req, res) => {
+router.post("/", verifyToken, async (req, res) => {
   const newProduct = new Product(req.body);
 
   try {
@@ -18,7 +18,7 @@ router.post("/", verifyTokenAndAdmin, async (req, res) => {
   }
 });
 
-router.put("/:id", verifyTokenAndAdmin, async (req, res) => {
+router.put("/:id", verifyToken, async (req, res) => {
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
@@ -65,8 +65,8 @@ router.get("/", async (req, res) => {
           $in: [qCategory],
         },
       });
-    } else{
-        products = await Product.find()
+    } else {
+      products = await Product.find();
     }
 
     res.status(200).json(products);
@@ -74,6 +74,5 @@ router.get("/", async (req, res) => {
     res.status(500).json(err);
   }
 });
-
 
 module.exports = router;

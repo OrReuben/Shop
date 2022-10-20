@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { mobile } from "../responsive";
 import { login } from "../Redux/apiCalls";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   width: 100vw;
@@ -52,11 +53,21 @@ const Button = styled.button`
   cursor: pointer;
   margin-bottom: 10px;
 
-  &:disabled{
-    color:green;
-    cursor:not-allowed
+  &:disabled {
+    color: green;
+    cursor: not-allowed;
   }
 `;
+
+const HomeButton = styled.button`
+width: 40%;
+  border: none;
+  padding: 15px 20px;
+  background-color: gray;
+  color: white;
+  cursor: pointer;
+  margin-bottom: 10px;
+`
 
 const Link = styled.a`
   margin: 5px 0px;
@@ -65,36 +76,55 @@ const Link = styled.a`
   cursor: pointer;
 `;
 
+const Error = styled.span`
+  color: red;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+`
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
-  const {isFetching, error} = useSelector((state) => state.user)
+  const { isFetching, error } = useSelector((state) => state.user);
+  const navigate = useNavigate()
 
   const handleClick = (e) => {
     e.preventDefault();
     login(dispatch, { username, password });
   };
   return (
-    <Container>
-      <Wrapper>
-        <Title>SIGN IN</Title>
-        <Form>
-          <Input
-            placeholder="Username"
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <Input
-            placeholder="Password"
-            type="password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button onClick={handleClick} disabled={isFetching}>LOGIN</Button>
-          <Link>DO NOT REMEMBER YOUR PASSWORD?</Link>
-          <Link>CREATE A NEW ACCOUNT</Link>
-        </Form>
-      </Wrapper>
-    </Container>
+    <>
+      {" "}
+      <Container>
+        <Wrapper>
+          <Title>SIGN IN</Title>
+          <Form>
+            <Input
+              placeholder="Username"
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <Input
+              placeholder="Password"
+              type="password"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <ButtonContainer>
+            <Button onClick={handleClick} disabled={isFetching}>
+              LOGIN
+            </Button>
+            <HomeButton onClick={() => navigate('/')}>BACK HOME..</HomeButton>
+            </ButtonContainer>
+            {error && <Error>Something went wrong...</Error>}
+            <Link>DO NOT REMEMBER YOUR PASSWORD?</Link>
+            <Link>CREATE A NEW ACCOUNT</Link>
+          </Form>
+        </Wrapper>
+      </Container>
+    </>
   );
 };
 

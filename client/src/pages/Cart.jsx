@@ -1,15 +1,16 @@
-import { Add, Remove } from "@material-ui/icons";
+import { Clear } from "@material-ui/icons";
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import Announcement from "../Components/Announcement";
 import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
 import { mobile } from "../responsive";
-import StripeCheckout from "react-stripe-checkout"; 
+import StripeCheckout from "react-stripe-checkout";
 import { useState } from "react";
 import { userRequest } from "../requestMethods";
 import { useNavigate } from "react-router-dom";
+import { removeProduct } from "../Redux/cartRedux";
 
 const KEY =
   "pk_test_51LtvZ5JWUm7HFjJLxonnbfjYHYMBWjWRhWWUmnCRDGOYvSKNFEHcpwEQttloutwIZ1P4RsDf7X9S1EihfTVofEll00SfS0APd3";
@@ -48,8 +49,6 @@ const TopTexts = styled.div`
 `;
 
 const TopText = styled.span`
-  text-decoration: underline;
-  cursor: pointer;
   margin: 0px 10px;
 `;
 
@@ -93,6 +92,7 @@ const ProductColor = styled.div`
   width: 20px;
   height: 20px;
   border-radius: 50%;
+  margin-left: 10px;
   background-color: ${(props) => props.color};
 `;
 
@@ -163,9 +163,23 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
+const Error = styled.span`
+  color: red;
+`;
+
+const ColorWrapper = styled.div`
+  display: flex;
+`;
+const DeleteButton = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 const Cart = () => {
   const cart = useSelector((state) => state.cart);
   const [stripeToken, setStripeToken] = useState(null);
+  const [error, setError] = useState(false);
+  const user = useSelector((state) => state.user.currentUser);
 
   const onToken = (token) => {
     setStripeToken(token);
@@ -182,7 +196,7 @@ const Cart = () => {
         navigate("/success", {
           state: {
             data: res.data,
-            cart: cart
+            cart: cart,
           },
         });
       } catch {}
@@ -190,6 +204,11 @@ const Cart = () => {
     stripeToken && makeRequest();
   }, [stripeToken, cart.total, navigate, cart]);
 
+  const quantity = useSelector((state) => state.cart.quantity);
+  const dispatch = useDispatch()
+  const handleRemove = (index) => {
+    dispatch(removeProduct(index))
+  }
   return (
     <Container>
       <Navbar />
@@ -197,45 +216,72 @@ const Cart = () => {
       <Wrapper>
         <Title>YOUR BAG</Title>
         <Top>
-          <TopButton>CONTINUE SHOPPING</TopButton>
+          <TopButton onClick={() => navigate("/products")}>
+            CONTINUE SHOPPING
+          </TopButton>
           <TopTexts>
-            <TopText>Shopping bag(2)</TopText>
-            <TopText>Your Wishlist(0)</TopText>
+            <TopText>Shopping bag({quantity})</TopText>
           </TopTexts>
-          <TopButton type="filled">CHECKOUT NOW</TopButton>
+          {user ? (
+            <StripeCheckout
+              name="Lama Shop"
+              image="https://avatars.githubusercontent.com/u/1486366?v=4"
+              billingAddress
+              shippingAddress
+              description="Your total is $20"
+              amount={cart.total * 100}
+              token={onToken}
+              stripeKey={KEY}
+            >
+              <Button>CHECKOUT NOW</Button>
+            </StripeCheckout>
+          ) : (
+            <>
+              <Button onClick={() => setError(true)}>CHECKOUT NOW</Button>
+              {error && <Error>Please Login To Continue..</Error>}
+            </>
+          )}
         </Top>
         <Bottom>
           <Info>
             {cart.products.map((product, index) => (
-              <Product key={index}>
-                <ProductDetail>
-                  <Image src={product.img} />
-                  <Details>
-                    <ProductName>
-                      <b>Product:</b> {product.title}
-                    </ProductName>
-                    <ProductId>
-                      <b>ID:</b> {product._id}
-                    </ProductId>
-                    <ProductColor color={product.color} />
-                    <ProductSize>
-                      <b>Size:</b> {product.size}
-                    </ProductSize>
-                  </Details>
-                </ProductDetail>
-                <PriceDetail>
-                  <ProductAmountContainer>
-                    <Add style={{ cursor: "pointer" }} />
-                    <ProductAmount>{product.quantity}</ProductAmount>
-                    <Remove style={{ cursor: "pointer" }} />
-                  </ProductAmountContainer>
-                  <ProductPrice>
-                    $ {product.price * product.quantity}
-                  </ProductPrice>
-                </PriceDetail>
-              </Product>
+              <>
+                <Product key={index}>
+                  <ProductDetail>
+                    <Image src={product.img} />
+                    <Details>
+                      <ProductName>
+                        <b>Product:</b> {product.title}
+                      </ProductName>
+                      <ProductId>
+                        <b>ID:</b> {product._id}
+                      </ProductId>
+                      <ColorWrapper>
+                        <b> Color: </b>
+                        <ProductColor color={product.color} />
+                      </ColorWrapper>
+                      <ProductSize>
+                        <b>Size:</b> {product.size}
+                      </ProductSize>
+                    </Details>
+                  </ProductDetail>
+                  <PriceDetail>
+                    <ProductAmountContainer>
+                      <ProductAmount>
+                        Quantity: {product.quantity}
+                      </ProductAmount>
+                    </ProductAmountContainer>
+                    <ProductPrice>
+                      $ {product.price * product.quantity}
+                    </ProductPrice>
+                  </PriceDetail>
+                  <DeleteButton>
+                    <Clear style={{cursor:"pointer"}} onClick={handleRemove(index)} />
+                  </DeleteButton>
+                </Product>
+                <Hr />
+              </>
             ))}
-            <Hr />
           </Info>
           <Summary>
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
@@ -255,18 +301,25 @@ const Cart = () => {
               <SummaryItemText>Total</SummaryItemText>
               <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
             </SummaryItem>
-            <StripeCheckout
-              name="Lama Shop"
-              image="https://avatars.githubusercontent.com/u/1486366?v=4"
-              billingAddress
-              shippingAddress
-              description="Your total is $20"
-              amount={cart.total * 100}
-              token={onToken}
-              stripeKey={KEY}
-            >
-              <Button>CHECKOUT NOW</Button>
-            </StripeCheckout>
+            {user ? (
+              <StripeCheckout
+                name="Lama Shop"
+                image="https://avatars.githubusercontent.com/u/1486366?v=4"
+                billingAddress
+                shippingAddress
+                description="Your total is $20"
+                amount={cart.total * 100}
+                token={onToken}
+                stripeKey={KEY}
+              >
+                <Button>CHECKOUT NOW</Button>
+              </StripeCheckout>
+            ) : (
+              <>
+                <Button onClick={() => setError(true)}>CHECKOUT NOW</Button>
+                {error && <Error>Please Login To Continue..</Error>}
+              </>
+            )}
           </Summary>
         </Bottom>
       </Wrapper>

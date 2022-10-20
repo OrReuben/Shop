@@ -11,9 +11,11 @@ import {
 } from "react-router-dom";
 import Pay from "./Components/Pay";
 import Success from "./pages/Success";
+import { useSelector } from "react-redux";
+import Auction from "./pages/Auction";
 
 const App = () => {
-  const user = false;
+  const user = useSelector((state) => state.user.currentUser);
   return (
     <Router>
       <Routes>
@@ -32,6 +34,7 @@ const App = () => {
         <Route path="/register" element={user ? <Home /> : <Register />} />
         <Route path="/pay" element={<Pay />} />
         <Route path="/success" element={<Success />} />
+        <Route path="/auction" element={<Auction />} />
       </Routes>
     </Router>
   );

@@ -8,8 +8,8 @@ import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
 import Newsletter from "../Components/Newsletter";
 import { mobile } from "../responsive";
-import { publicRequest } from "../requestMethods";
-import { useDispatch } from "react-redux";
+import { publicRequest, userRequest } from "../requestMethods";
+import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../Redux/cartRedux";
 
 const Container = styled.div``;
@@ -48,6 +48,7 @@ const Desc = styled.p`
 const Price = styled.span`
   font-weight: 100;
   font-size: 40px;
+  margin: 5px 0px;
 `;
 
 const FilterContainer = styled.div`
@@ -75,6 +76,10 @@ const FilterColor = styled.div`
   background-color: ${(props) => props.color};
   margin: 0px 5px;
   cursor: pointer;
+
+  &:active {
+    border: 1px solid green;
+  }
 `;
 
 const FilterSize = styled.select`
@@ -121,6 +126,54 @@ const Button = styled.button`
   }
 `;
 
+const Hr = styled.hr`
+  background-color: #eee;
+  border: none;
+  height: 1px;
+`;
+
+const PriceContainer = styled.div`
+  display: flex;
+  margin: 10px;
+  flex-direction: column;
+`;
+
+const BidContainer = styled.div`
+  display: flex;
+  margin-top: 10px;
+  justify-content: center;
+  align-items: center;
+`;
+const BidButton = styled.button`
+  padding: 15px;
+  margin: 10px 0px;
+  font-size: 15px;
+  border-radius: 20%;
+  background-color: #000000f3;
+  opacity: 0.9;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+
+  &:hover {
+    opacity: 1;
+  }
+`;
+const Input = styled.input`
+  min-width: 40%;
+  margin: 20px 5px;
+  padding: 10px;
+`;
+
+const Error = styled.p`
+  color: red;
+  text-align: center;
+`;
+
+const LastBidder = styled.h2`
+  margin: 5px 12px 2px;
+`
+
 const Product = () => {
   const location = useLocation();
   const id = location.pathname.split("/")[2];
@@ -129,8 +182,11 @@ const Product = () => {
   const [quantity, setQuantity] = useState(1);
   const [color, setColor] = useState("");
   const [size, setSize] = useState("");
-  const dispatch = useDispatch()
-
+  const dispatch = useDispatch();
+  const [newBid, setNewBid] = useState(0);
+  const [error, setError] = useState(false);
+  const [userError, setUserError] = useState(false);
+  
   useEffect(() => {
     const getProduct = async () => {
       try {
@@ -150,10 +206,36 @@ const Product = () => {
   };
 
   const handleClick = () => {
-    dispatch(
-    addProduct({ ...product, quantity, color, size })
-    )
+    dispatch(addProduct({ ...product, quantity, color, size }));
   };
+  
+  const user = useSelector((state) => state.user.currentUser);
+  
+  const handleBid = () => {
+    if (user) {
+    const newBidPut = {
+      title: product.title,
+      desc: product.desc,
+      img: product.img,
+      categories: product.categories,
+      size: product.size,
+      color: product.color,
+      bidPrice: newBid,
+      bidderUsername: user.username,
+      posterUsername: "Admin",
+      price: product.price,
+    };
+      if (newBid >= 1.1 * product.bidPrice) {
+        userRequest
+        .put(`/products/${product._id}`, newBidPut)
+        .then(setError(false))
+        .then(window.location.reload());
+      } else {
+        setError(true);
+      }
+    } else setUserError(true)
+  };
+
 
   return (
     <Container>
@@ -166,7 +248,21 @@ const Product = () => {
         <InfoContainer>
           <Title>{product.title}</Title>
           <Desc>{product.desc}</Desc>
-          <Price>$ {product.price}</Price>
+          <PriceContainer>
+            <Price>
+              <b> Buy Now: </b> $ {product.price}
+            </Price>
+            <Hr />
+            <Price>
+              <b> Bid: </b> $ {product.bidPrice}
+            </Price>
+          </PriceContainer>
+          <LastBidder>
+            Last bidder: {product.bidderUsername}
+          </LastBidder>
+          <LastBidder>
+            Poster: {product.posterUsername}
+          </LastBidder>
           <FilterContainer>
             <Filter>
               <FilterTitle>Color</FilterTitle>
@@ -185,12 +281,35 @@ const Product = () => {
           </FilterContainer>
           <AddContainer>
             <AmountContainer>
-              <Remove onClick={() => handleQuantity("dec")} />
+              <Remove
+                style={{ cursor: "pointer" }}
+                onClick={() => handleQuantity("dec")}
+              />
               <Amount>{quantity}</Amount>
-              <Add onClick={() => handleQuantity("inc")} />
+              <Add
+                style={{ cursor: "pointer" }}
+                onClick={() => handleQuantity("inc")}
+              />
             </AmountContainer>
             <Button onClick={handleClick}>ADD TO CART</Button>
           </AddContainer>
+          <BidContainer>
+            <Input
+              onChange={(e) => setNewBid(e.target.value)}
+              placeholder="Place your bid.."
+            />
+            <BidButton onClick={handleBid}>BID</BidButton>
+          </BidContainer>
+          {error && (
+            <>
+              <Error>Bid must be higher!</Error>
+            </>
+          )}
+          {userError && (
+            <>
+              <Error>You must log in to bid!</Error>
+            </>
+          )}
         </InfoContainer>
       </Wrapper>
       <Newsletter />

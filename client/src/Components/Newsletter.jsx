@@ -38,6 +38,7 @@ padding-left: 20px;
 const Button = styled.button`
 flex:1;
 background-color:teal;
+cursor:pointer;
 color:white;
 `
 const Newsletter = () => {

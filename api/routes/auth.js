@@ -5,10 +5,16 @@ const jwt = require("jsonwebtoken");
 
 router.post("/register", async (req, res) => {
   const newUser = new User({
+    name: req.body.name,
+    lastName: req.body.lastName,
     username: req.body.username,
     email: req.body.email,
     password: CryptoJS.AES.encrypt(
       req.body.password,
+      process.env.PASS_SEC
+    ).toString(),
+    confirmPassword: CryptoJS.AES.encrypt(
+      req.body.confirmPassword,
       process.env.PASS_SEC
     ).toString(),
   });
@@ -44,8 +50,8 @@ router.post("/login", async (req, res) => {
       if (OriginalPassword !== req.body.password) {
         res.status(401).json("Wrong credentials!");
       } else {
-        const { password, ...others } = user._doc;
-        res.status(200).json(others);
+        const { password, confirmPassword, ...others } = user._doc;
+        res.status(200).json({...others, accessToken});
       }
     }
   } catch (err) {

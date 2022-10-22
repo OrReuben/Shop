@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 import { useState } from "react";
-import {publicRequest} from "../requestMethods.js";
+import { publicRequest } from "../requestMethods.js";
 
 const Container = styled.div`
   width: 100vw;
@@ -56,6 +56,11 @@ const Button = styled.button`
   background-color: teal;
   color: white;
   cursor: pointer;
+
+  &:disabled {
+    color: gray;
+    cursor: not-allowed;
+  }
 `;
 
 const ButtonContainer = styled.div`
@@ -93,7 +98,9 @@ const Register = () => {
       password,
       confirmPassword,
     };
-    publicRequest.post("/auth/register", newUser).then(() => navigate('/login'));
+    publicRequest
+      .post("/auth/register", newUser)
+      .then(() => navigate("/login"));
   };
   return (
     <Container>
@@ -128,7 +135,17 @@ const Register = () => {
             data in accordance with the <b>PRIVACY POLICY</b>
           </Agreement>
           <ButtonContainer>
-            <Button>CREATE</Button>
+            <Button
+              disabled={
+                name.length === 0 ||
+                lastName.length === 0 ||
+                email.length === 0 ||
+                password.length === 0 ||
+                confirmPassword.length === 0
+              }
+            >
+              CREATE
+            </Button>
             <HomeButton onClick={() => navigate("/")}>BACK HOME..</HomeButton>
           </ButtonContainer>
         </Form>

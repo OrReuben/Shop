@@ -54,20 +54,21 @@ const Button = styled.button`
   margin-bottom: 10px;
 
   &:disabled {
-    color: green;
+    color: gray;
+    font-weight: 700;
     cursor: not-allowed;
   }
 `;
 
 const HomeButton = styled.button`
-width: 40%;
+  width: 40%;
   border: none;
   padding: 15px 20px;
   background-color: gray;
   color: white;
   cursor: pointer;
   margin-bottom: 10px;
-`
+`;
 
 const Link = styled.a`
   margin: 5px 0px;
@@ -84,13 +85,13 @@ const ButtonContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-content: center;
-`
+`;
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const { isFetching, error } = useSelector((state) => state.user);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -113,10 +114,15 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
             <ButtonContainer>
-            <Button onClick={handleClick} disabled={isFetching}>
-              LOGIN
-            </Button>
-            <HomeButton onClick={() => navigate('/')}>BACK HOME..</HomeButton>
+              <Button
+                onClick={handleClick}
+                disabled={
+                  username.length === 0 || password.length === 0 || isFetching
+                }
+              >
+                LOGIN
+              </Button>
+              <HomeButton onClick={() => navigate("/")}>BACK HOME..</HomeButton>
             </ButtonContainer>
             {error && <Error>Something went wrong...</Error>}
             <Link>DO NOT REMEMBER YOUR PASSWORD?</Link>

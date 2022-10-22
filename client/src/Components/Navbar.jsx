@@ -58,7 +58,7 @@ const Input = styled.input`
 `;
 
 const Center = styled.div`
-  flex: 2;
+  flex: 3;
   text-align: center;
   ${mobile({ flex: 1 })}
 `;
@@ -69,7 +69,7 @@ const Logo = styled.h1`
   ${mobile({ fontSize: "24px", marginLeft: "50px" })}
 `;
 const Right = styled.div`
-  flex: 2;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: flex-end;

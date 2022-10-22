@@ -58,6 +58,10 @@ const Button = styled.button`
   background-color: teal;
   color: white;
   cursor: pointer;
+
+  &:disabled {
+    color: gray;
+  }
   ${mobile({
     padding: "5px",
     fontSize: "12px",
@@ -103,24 +107,32 @@ const Auction = () => {
   const [color, setColor] = useState([]);
   const [bidPrice, setBidPrice] = useState("");
   const [price, setPrice] = useState("");
+  const [endAuction, setEndAuction] = useState("");
   const user = useSelector((state) => state.user.currentUser);
 
+  const endTimeInMS = Date.parse(endAuction);
+  const TimeInMS = Date.parse(new Date());
+  const timeLeft = endTimeInMS - TimeInMS;
+
+  console.log();
   const handleSubmit = (e) => {
     e.preventDefault();
     const newPost = {
       title,
       desc,
       img,
-      categories: categories.toLowerCase().split(' '),
-      size: size.toUpperCase().split(' '),
-      color: color.toLowerCase().split(' '),
+      categories: categories.length > 0 && categories.toLowerCase().split(" "),
+      size: size.length > 0 && size.toUpperCase().split(" "),
+      color: color.length > 0 && color.toLowerCase().split(" "),
       price,
       bidPrice,
       bidderUsername: "None",
       posterUsername: user.username,
+      endAuction,
+      timeLeft,
+      status: "ONGOING",
     };
-    console.log(newPost);
-    userRequest.post("/products", newPost).then(() => navigate("/products"));
+    userRequest.post("/products", newPost).then((res) => console.log(res.data));
   };
   return (
     <Container>
@@ -159,12 +171,31 @@ const Auction = () => {
             placeholder="Buy Now Price"
             onChange={(e) => setPrice(e.target.value)}
           />
+          <Input
+            placeholder="End Time"
+            type="datetime-local"
+            onChange={(e) => setEndAuction(e.target.value)}
+          />
           <Agreement>
             By creating a post, I consent to the processing of my personal data
             in accordance with the <b>PRIVACY POLICY</b>
           </Agreement>
           <ButtonContainer>
-            <Button>CREATE</Button>
+            <Button
+              disabled={
+                title.length === 0 ||
+                desc.length === 0 ||
+                img.length === 0 ||
+                categories.length === 0 ||
+                size.length === 0 ||
+                color.length === 0 ||
+                bidPrice.length === 0 ||
+                price.length === 0 ||
+                isNaN(endTimeInMS)
+              }
+            >
+              CREATE
+            </Button>
             <HomeButton onClick={() => navigate("/")}>BACK HOME..</HomeButton>
           </ButtonContainer>
         </Form>

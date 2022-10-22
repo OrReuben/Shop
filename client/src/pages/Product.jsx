@@ -11,6 +11,7 @@ import { mobile } from "../responsive";
 import { publicRequest, userRequest } from "../requestMethods";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../Redux/cartRedux";
+import Clock from "../Components/Clock";
 
 const Container = styled.div``;
 
@@ -155,6 +156,11 @@ const BidButton = styled.button`
   cursor: pointer;
   font-weight: 500;
 
+  &:disabled {
+    color: gray;
+    cursor: not-allowed;
+  }
+
   &:hover {
     opacity: 1;
   }
@@ -163,6 +169,11 @@ const Input = styled.input`
   min-width: 40%;
   margin: 20px 5px;
   padding: 10px;
+  &::-webkit-outer-spin-button,
+  ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 `;
 
 const Error = styled.p`
@@ -172,7 +183,7 @@ const Error = styled.p`
 
 const LastBidder = styled.h2`
   margin: 5px 12px 2px;
-`
+`;
 
 const Product = () => {
   const location = useLocation();
@@ -186,7 +197,10 @@ const Product = () => {
   const [newBid, setNewBid] = useState(0);
   const [error, setError] = useState(false);
   const [userError, setUserError] = useState(false);
-  
+  const [auctionError, setAuctionError] = useState(false);
+  const [sameUserError, setSameUserError] = useState(false);
+  const [timeCounter, setTimeCounter] = useState("Loading...");
+
   useEffect(() => {
     const getProduct = async () => {
       try {
@@ -208,34 +222,38 @@ const Product = () => {
   const handleClick = () => {
     dispatch(addProduct({ ...product, quantity, color, size }));
   };
-  
-  const user = useSelector((state) => state.user.currentUser);
-  
-  const handleBid = () => {
-    if (user) {
-    const newBidPut = {
-      title: product.title,
-      desc: product.desc,
-      img: product.img,
-      categories: product.categories,
-      size: product.size,
-      color: product.color,
-      bidPrice: newBid,
-      bidderUsername: user.username,
-      posterUsername: "Admin",
-      price: product.price,
-    };
-      if (newBid >= 1.1 * product.bidPrice) {
-        userRequest
-        .put(`/products/${product._id}`, newBidPut)
-        .then(setError(false))
-        .then(window.location.reload());
-      } else {
-        setError(true);
-      }
-    } else setUserError(true)
-  };
 
+  const user = useSelector((state) => state.user.currentUser);
+
+  const handleBid = () => {
+    if (timeCounter !== "THE AUCTION HAS ENDED") {
+      if (product.posterUsername !== user.username) {
+        if (user) {
+          const newBidPut = {
+            title: product.title,
+            desc: product.desc,
+            img: product.img,
+            categories: product.categories,
+            size: product.size,
+            color: product.color,
+            bidPrice: newBid,
+            bidderUsername: user.username,
+            posterUsername: product.posterUsername,
+            price: product.price,
+            status: product.status,
+          };
+          if (newBid >= 1.1 * product.bidPrice) {
+            userRequest
+              .put(`/products/${product._id}`, newBidPut)
+              .then(setError(false))
+              .then(window.location.reload());
+          } else {
+            setError(true);
+          }
+        } else setUserError(true);
+      } else setSameUserError(true);
+    } else setAuctionError(true);
+  };
 
   return (
     <Container>
@@ -257,12 +275,15 @@ const Product = () => {
               <b> Bid: </b> $ {product.bidPrice}
             </Price>
           </PriceContainer>
-          <LastBidder>
-            Last bidder: {product.bidderUsername}
-          </LastBidder>
-          <LastBidder>
-            Poster: {product.posterUsername}
-          </LastBidder>
+          <LastBidder>Last bidder: {product.bidderUsername}</LastBidder>
+          <LastBidder>Poster: {product.posterUsername}</LastBidder>
+          <Clock
+            endAuction={product.endAuction && product.endAuction}
+            timeLeft={product.timeLeft && product.timeLeft}
+            setTimeCounter={setTimeCounter}
+            timeCounter={timeCounter}
+            product={product}
+          />
           <FilterContainer>
             <Filter>
               <FilterTitle>Color</FilterTitle>
@@ -296,9 +317,15 @@ const Product = () => {
           <BidContainer>
             <Input
               onChange={(e) => setNewBid(e.target.value)}
+              type="number"
               placeholder="Place your bid.."
             />
-            <BidButton onClick={handleBid}>BID</BidButton>
+            <BidButton
+              onClick={handleBid}
+              disabled={timeCounter === "Loading..."}
+            >
+              BID
+            </BidButton>
           </BidContainer>
           {error && (
             <>
@@ -308,6 +335,16 @@ const Product = () => {
           {userError && (
             <>
               <Error>You must log in to bid!</Error>
+            </>
+          )}
+          {auctionError && (
+            <>
+              <Error>The auction has already ended!</Error>
+            </>
+          )}
+          {sameUserError && (
+            <>
+              <Error>Poster can't make bids!</Error>
             </>
           )}
         </InfoContainer>

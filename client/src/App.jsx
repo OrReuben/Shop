@@ -13,6 +13,7 @@ import Pay from "./Components/Pay";
 import Success from "./pages/Success";
 import { useSelector } from "react-redux";
 import Auction from "./pages/Auction";
+import MyAuctions from "./pages/MyAuctions";
 
 const App = () => {
   const user = useSelector((state) => state.user.currentUser);
@@ -35,8 +36,10 @@ const App = () => {
         <Route path="/pay" element={<Pay />} />
         <Route path="/success" element={<Success />} />
         <Route path="/auction" element={<Auction />} />
+        <Route path="/myauctions" element={<MyAuctions />} />
       </Routes>
     </Router>
+    
   );
 };
 

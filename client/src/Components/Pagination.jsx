@@ -2,13 +2,17 @@ import { Button } from "@material-ui/core";
 // import { ArrowLeft, ArrowRight } from "@material-ui/icons";
 // import { useState } from "react";
 import styled from "styled-components";
+import { mobile } from "../responsive";
 
 const Ul = styled.ul`
   list-style: none;
   padding: 0;
   display: flex;
   justify-content: center;
-  width: 100vw;
+  align-items: center;
+  width: 95vw;
+${mobile({width:"86vw"})}
+
 `;
 const Li = styled.li`
   margin: 5px;

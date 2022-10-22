@@ -12,6 +12,9 @@ const ProductSchema = new mongoose.Schema(
     bidPrice: { type: Number, required: true },
     bidderUsername: { type: String, required: true },
     posterUsername: { type: String, required: true },
+    endAuction: { type: String, required: true },
+    timeLeft: { type: Number },
+    status: { type: String, required:true },
     inStock: { type: Boolean, default: true },
   },
   { timestamps: true }

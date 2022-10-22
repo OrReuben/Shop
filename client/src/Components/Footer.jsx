@@ -22,7 +22,11 @@ const Left = styled.div`
   padding: 20px;
 `;
 
-const Logo = styled.h1``;
+const Logo = styled.h1`
+text-align: center;
+text-decoration: underline;
+text-underline-position: under;
+`;
 
 const Desc = styled.p`
   margin: 20px 0px;
@@ -85,7 +89,7 @@ const Footer = () => {
   return (
     <Container>
       <Left>
-        <Logo>LAMA.</Logo>
+        <Logo>BidIt</Logo>
         <Desc>
           There are many variations of passages of Lorem Ipsum available, but
           the majority have suffered alteration in some form, by injected

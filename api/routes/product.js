@@ -33,7 +33,7 @@ router.put("/:id", verifyToken, async (req, res) => {
   }
 });
 
-router.delete("/:id", verifyTokenAndAdmin, async (req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
     res.status(200).json("Product has been deleted...");
@@ -46,6 +46,32 @@ router.get("/find/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     res.status(200).json(product);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+router.get("/get/:username", async (req, res) => {
+  try {
+    const product = await Product.find({ posterUsername: req.params.username });
+    if (product.length === 0) {
+      res.status(401).json({
+        status: "fail",
+        message: "This user has no products",
+      });
+    } else res.status(200).json(product);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+router.get("/gets/:username", async (req, res) => {
+  try {
+    const product = await Product.find({ bidderUsername: req.params.username });
+    if (product.length === 0) {
+      res.status(401).json({
+        status: "fail",
+        message: "This user has no products",
+      });
+    } else res.status(200).json(product);
   } catch (err) {
     res.status(500).json(err);
   }

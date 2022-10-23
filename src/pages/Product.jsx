@@ -229,30 +229,23 @@ const Product = () => {
     dispatch(addProduct({ ...product, quantity, color, size }));
   };
 
-  const user = useSelector((state) => state.user.currentUser);
+  let user = "";
+  const cheak = useSelector((state) => state.user.currentUser);
+  cheak !== null ? (user = cheak) : (user = "");
 
-  const handleBid = () => {
+  const handleBid = async () => {
     if (timeCounter !== "THE AUCTION HAS ENDED") {
       if (product.posterUsername !== user.username) {
-        if (user) {
+        if (user !== "") {
           const newBidPut = {
-            title: product.title,
-            desc: product.desc,
-            img: product.img,
-            categories: product.categories,
-            size: product.size,
-            color: product.color,
             bidPrice: newBid,
             bidderUsername: user.username,
-            posterUsername: product.posterUsername,
-            price: product.price,
-            status: product.status,
           };
           if (newBid >= 1.1 * product.bidPrice) {
-            userRequest
+            await userRequest
               .put(`/products/${product._id}`, newBidPut)
-              .then(setError(false))
-              .then(window.location.reload());
+              .then(setError(false));
+            window.location.reload();
           } else {
             setError(true);
           }

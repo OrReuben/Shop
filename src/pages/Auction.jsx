@@ -97,6 +97,11 @@ const HomeButton = styled.p`
   })}
 `;
 
+const Error = styled.span`
+  text-align: center;
+  color: red;
+`;
+
 const Auction = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
@@ -108,6 +113,7 @@ const Auction = () => {
   const [bidPrice, setBidPrice] = useState("");
   const [price, setPrice] = useState("");
   const [endAuction, setEndAuction] = useState("");
+  const [error, setError] = useState(false);
   const user = useSelector((state) => state.user.currentUser);
 
   const endTimeInMS = Date.parse(endAuction);
@@ -117,22 +123,25 @@ const Auction = () => {
   console.log();
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newPost = {
-      title,
-      desc,
-      img,
-      categories: categories.length > 0 && categories.toLowerCase().split(" "),
-      size: size.length > 0 && size.toUpperCase().split(" "),
-      color: color.length > 0 && color.toLowerCase().split(" "),
-      price,
-      bidPrice,
-      bidderUsername: "None",
-      posterUsername: user.username,
-      endAuction,
-      timeLeft,
-      status: "ONGOING",
-    };
-    userRequest.post("/products", newPost).then((res) => console.log(res.data));
+    if (endTimeInMS > TimeInMS) {
+      const newPost = {
+        title,
+        desc,
+        img,
+        categories:
+          categories.length > 0 && categories.toLowerCase().split(" "),
+        size: size.length > 0 && size.toUpperCase().split(" "),
+        color: color.length > 0 && color.toLowerCase().split(" "),
+        price,
+        bidPrice,
+        bidderUsername: "None",
+        posterUsername: user.username,
+        endAuction,
+        timeLeft,
+        status: "ONGOING",
+      };
+      userRequest.post("/products", newPost).then(() => navigate("/products"));
+    } else setError(true);
   };
   return (
     <Container>
@@ -198,6 +207,7 @@ const Auction = () => {
             </Button>
             <HomeButton onClick={() => navigate("/")}>BACK HOME..</HomeButton>
           </ButtonContainer>
+          <Error>{error && "Please set a valid date"}</Error>
         </Form>
       </Wrapper>
     </Container>

@@ -205,10 +205,10 @@ const Cart = () => {
   }, [stripeToken, cart.total, navigate, cart]);
 
   const quantity = useSelector((state) => state.cart.quantity);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const handleRemove = (index) => {
-    dispatch(removeProduct(index))
-  }
+    dispatch(removeProduct(index));
+  };
   return (
     <Container>
       <Navbar />
@@ -245,7 +245,7 @@ const Cart = () => {
         <Bottom>
           <Info>
             {cart.products.map((product, index) => (
-              <>
+              <div key={index}>
                 <Product key={index}>
                   <ProductDetail>
                     <Image src={product.img} />
@@ -272,15 +272,21 @@ const Cart = () => {
                       </ProductAmount>
                     </ProductAmountContainer>
                     <ProductPrice>
-                      $ {product.price * product.quantity}
+                      ${" "}
+                      {product.status === "ENDED"
+                        ? product.bidPrice * product.quantity
+                        : product.price * product.quantity}
                     </ProductPrice>
                   </PriceDetail>
                   <DeleteButton>
-                    <Clear style={{cursor:"pointer"}} onClick={handleRemove(index)} />
+                    <Clear
+                      style={{ cursor: "pointer" }}
+                      onClick={handleRemove(index)}
+                    />
                   </DeleteButton>
                 </Product>
                 <Hr />
-              </>
+              </div>
             ))}
           </Info>
           <Summary>

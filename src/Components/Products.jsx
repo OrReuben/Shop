@@ -34,8 +34,8 @@ const Products = ({ cat, filters, sort }) => {
   useEffect(() => {
     const getProducts = async () => {
       const products_url = cat
-        ? `http://localhost:5000/api/products?category=${cat}`
-        : "http://localhost:5000/api/products";
+        ? `https://auction-shop.cyclic.app/api/products?category=${cat}`
+        : "https://auction-shop.cyclic.app/api/products";
       try {
         setLoading(true);
         const res = await axios.get(products_url);

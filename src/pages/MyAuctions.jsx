@@ -162,28 +162,36 @@ const MyAuctions = () => {
   };
 
   useEffect(() => {
+    let isMounted = true;
     const getMyAuctions = async () => {
-      try {
-        await userRequest
-          .get(`/products/get/${user.username}`)
-          .then((res) => setMyAuctions(res.data));
-        setLoading(false);
-      } catch {
-        setLoading(false);
+      if (isMounted) {
+        try {
+          await userRequest
+            .get(`/products/get/${user.username}`)
+            .then((res) => setMyAuctions(res.data));
+          setLoading(false);
+        } catch {
+          setLoading(false);
+        }
       }
     };
     getMyAuctions();
     const getMyBids = async () => {
-      try {
-        await userRequest
-          .get(`/products/gets/${user.username}`)
-          .then((res) => setBiddedAuctions(res.data));
-        setLoadingBid(false);
-      } catch {
-        setLoadingBid(false);
+      if (isMounted) {
+        try {
+          await userRequest
+            .get(`/products/gets/${user.username}`)
+            .then((res) => setBiddedAuctions(res.data));
+          setLoadingBid(false);
+        } catch {
+          setLoadingBid(false);
+        }
       }
     };
     getMyBids();
+    return () => {
+      isMounted = false;
+    };
   }, [user]);
   return (
     <>

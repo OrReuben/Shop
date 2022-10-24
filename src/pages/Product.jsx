@@ -8,7 +8,7 @@ import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
 import Newsletter from "../Components/Newsletter";
 import { mobile } from "../responsive";
-import { publicRequest, userRequest } from "../requestMethods";
+import { publicRequest } from "../requestMethods";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../Redux/cartRedux";
 import Clock from "../Components/Clock";

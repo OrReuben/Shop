@@ -44,6 +44,12 @@ const Input = styled.input`
   min-width: 40%;
   margin: 10px 10px 0px 0px;
   padding: 10px;
+
+  &::-webkit-outer-spin-button,
+  ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 `;
 
 const Agreement = styled.span`
@@ -174,10 +180,12 @@ const Auction = () => {
           />
           <Input
             placeholder="Starting Bid Price"
+            type="number"
             onChange={(e) => setBidPrice(e.target.value)}
           />
           <Input
             placeholder="Buy Now Price"
+            type="number"
             onChange={(e) => setPrice(e.target.value)}
           />
           <Input

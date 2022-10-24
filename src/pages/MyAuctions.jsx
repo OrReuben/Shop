@@ -124,6 +124,11 @@ const LinkText = styled.a`
   font-weight: 700;
   padding: 10px;
   cursor: pointer;
+  transition: 0.3s;
+
+  &:hover{
+    color:black
+  }
 `;
 
 const Hr = styled.hr`

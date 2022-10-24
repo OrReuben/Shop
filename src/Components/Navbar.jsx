@@ -80,6 +80,12 @@ const MenuItem = styled.div`
   font-size: 14px;
   cursor: pointer;
   margin-left: 25px;
+  transition: all 0.2s;
+
+  &:hover {
+    font-weight: 700;
+    border-bottom: 1px solid gray;
+  }
   ${mobile({ fontSize: "12px", marginLeft: "10px" })}
   ${mobile({ display: "none" })}
 `;

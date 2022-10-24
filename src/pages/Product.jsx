@@ -242,7 +242,7 @@ const Product = () => {
             bidderUsername: user.username,
           };
           if (newBid >= 1.1 * product.bidPrice) {
-            await userRequest
+            await publicRequest
               .put(`/products/${product._id}`, newBidPut)
               .then(setError(false));
             window.location.reload();

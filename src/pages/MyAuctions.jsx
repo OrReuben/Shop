@@ -1,4 +1,9 @@
-import { Clear, PostAdd, ShoppingCartOutlined } from "@material-ui/icons";
+import {
+  Check,
+  Clear,
+  PostAdd,
+  ShoppingCartOutlined,
+} from "@material-ui/icons";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -129,20 +134,33 @@ const Hr = styled.hr`
 `;
 const MyAuctions = () => {
   const [product, setProduct] = useState({});
+  const [repostProduct, setRepostProduct] = useState({});
   const [myAuctions, setMyAuctions] = useState([]);
   const [biddedAuctions, setBiddedAuctions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingBids, setLoadingBid] = useState(true);
+  const [error, setError] = useState(false);
   const user = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
   const handleRemove = (id) => {
     userRequest.delete(`/products/${id}`).then(() => window.location.reload());
   };
 
-  const handleRepost = (id) => {
-    userRequest
-      .put(`/products/${id}`, { status: "ONGOING" })
-      .then((res) => console.log(res.data));
+  const TimeInMS = Date.parse(new Date());
+
+  const handleRepost = async (id) => {
+    await userRequest
+      .get("/products/find/" + id)
+      .then((res) => setRepostProduct(res.data));
+    if (!isNaN(repostProduct.timeLeft)) {
+      await userRequest
+        .put(`/products/${id}`, {
+          status: "ONGOING",
+          endAuction: TimeInMS + repostProduct.timeLeft,
+        })
+        .then((res) => console.log(res.data));
+      window.location.reload();
+    } else setError(true);
   };
 
   const handleClick = async (id) => {
@@ -263,22 +281,26 @@ const MyAuctions = () => {
                             </DashboardTableContent>
                             <DashboardTableContent>
                               <TableIcon>
-                                <Icon>
-                                  <Clear
-                                    style={{ fontSize: "15px" }}
-                                    onClick={() => handleRemove(auction._id)}
-                                  />
+                                <Icon onClick={() => handleRemove(auction._id)}>
+                                  <Clear style={{ fontSize: "15px" }} />
                                   <IconText>REMOVE</IconText>
                                 </Icon>
-                                {auction.status === "ENDED" && (
-                                  <Icon>
-                                    <PostAdd
-                                      style={{ fontSize: "15px" }}
+                                {auction.status === "ENDED" &&
+                                  (!error ? (
+                                    <Icon
                                       onClick={() => handleRepost(auction._id)}
-                                    />
-                                    <IconText>REPOST</IconText>
-                                  </Icon>
-                                )}
+                                    >
+                                      <PostAdd style={{ fontSize: "15px" }} />
+                                      <IconText>REPOST</IconText>
+                                    </Icon>
+                                  ) : (
+                                    <Icon
+                                      onClick={() => handleRepost(auction._id)}
+                                    >
+                                      <Check style={{ fontSize: "15px" }} />
+                                      <IconText>SUBMIT</IconText>
+                                    </Icon>
+                                  ))}
                               </TableIcon>
                             </DashboardTableContent>
                           </DashboardTableRow>

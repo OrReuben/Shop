@@ -2,8 +2,9 @@ import React, { useEffect } from "react";
 import { userRequest } from "../requestMethods";
 
 const Clock = ({ endAuction, timeCounter, setTimeCounter, product }) => {
-  const endTimeInMS = Date.parse(endAuction);
   const TimeInMS = Date.parse(new Date());
+  const endTimeInMS =
+    TimeInMS < Date.parse(endAuction) ? Date.parse(endAuction) : endAuction;
   const timeLeft = endTimeInMS - TimeInMS;
 
   useEffect(() => {

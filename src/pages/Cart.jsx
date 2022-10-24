@@ -309,11 +309,11 @@ const Cart = () => {
             </SummaryItem>
             {user ? (
               <StripeCheckout
-                name="Lama Shop"
-                image="https://avatars.githubusercontent.com/u/1486366?v=4"
+                name="BidIt"
+                image="https://t3.ftcdn.net/jpg/03/90/81/96/360_F_390819611_6ITIVeTZcHKqpmzYGfNYy5u7q6fJo5kl.jpg"
                 billingAddress
                 shippingAddress
-                description="Your total is $20"
+                description={`Your total is  $${cart.total}`}
                 amount={cart.total * 100}
                 token={onToken}
                 stripeKey={KEY}

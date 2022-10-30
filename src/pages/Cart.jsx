@@ -210,9 +210,9 @@ const Cart = () => {
   const dispatch = useDispatch();
   const handleRemove = (index) => {
   // const newCart = cart.products.filter((product, i) => i !== index)
-    // dispatch(removeProduct(index))
+    dispatch(removeProduct(index))
     // localStorage.setItem("cart", JSON.stringify(newCart));
-    console.log(cart.products.filter((product, i) => i !== index));
+    // console.log(cart.products.filter((product, i) => i !== index));
   };
   return (
     <Container>

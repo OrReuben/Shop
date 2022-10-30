@@ -126,8 +126,8 @@ const LinkText = styled.a`
   cursor: pointer;
   transition: 0.3s;
 
-  &:hover{
-    color:black
+  &:hover {
+    color: black;
   }
 `;
 
@@ -147,25 +147,35 @@ const MyAuctions = () => {
   const [error, setError] = useState(false);
   const user = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
-  const handleRemove = (id) => {
-    userRequest.delete(`/products/${id}`).then(() => window.location.reload());
+  const handleRemove = async (id) => {
+    try {
+      await userRequest
+        .delete(`/products/${id}`)
+        .then(() => window.location.reload());
+    } catch {
+      return error;
+    }
   };
 
   const TimeInMS = Date.parse(new Date());
 
   const handleRepost = async (id) => {
-    await userRequest
-      .get("/products/find/" + id)
-      .then((res) => setRepostProduct(res.data));
-    if (!isNaN(repostProduct.timeLeft)) {
+    try {
       await userRequest
-        .put(`/products/${id}`, {
-          status: "ONGOING",
-          endAuction: TimeInMS + repostProduct.timeLeft,
-        })
-        .then((res) => console.log(res.data));
-      window.location.reload();
-    } else setError(true);
+        .get("/products/find/" + id)
+        .then((res) => setRepostProduct(res.data));
+      if (!isNaN(repostProduct.timeLeft)) {
+        await userRequest
+          .put(`/products/${id}`, {
+            status: "ONGOING",
+            endAuction: TimeInMS + repostProduct.timeLeft,
+          })
+          .then((res) => console.log(res.data));
+        window.location.reload();
+      } else setError(true);
+    } catch {
+      return error;
+    }
   };
 
   const handleClick = async (id) => {
@@ -255,7 +265,7 @@ const MyAuctions = () => {
                         </DashboardTableRow>
                       </tbody>
                       <tbody>
-                        {myAuctions.map((auction) => (
+                        {myAuctions.map((auction, index) => (
                           <DashboardTableRow key={auction._id}>
                             <DashboardTableContent>
                               <TableImage src={auction.img} />

@@ -30,7 +30,7 @@ const Title = styled.h1`
 const Top = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   padding: 20px;
 `;
 
@@ -38,6 +38,7 @@ const TopButton = styled.button`
   padding: 10px;
   font-weight: 600;
   cursor: pointer;
+  justify-content: flex-start;
   border: ${(props) => props.type === "filled" && "none"};
   background-color: ${(props) =>
     props.type === "filled" ? "black" : "transparent"};
@@ -50,6 +51,7 @@ const TopTexts = styled.div`
 
 const TopText = styled.span`
   margin: 0px 10px;
+  justify-content: center;
 `;
 
 const Bottom = styled.div`
@@ -207,7 +209,10 @@ const Cart = () => {
   const quantity = useSelector((state) => state.cart.quantity);
   const dispatch = useDispatch();
   const handleRemove = (index) => {
-    dispatch(removeProduct(index));
+  // const newCart = cart.products.filter((product, i) => i !== index)
+    // dispatch(removeProduct(index))
+    // localStorage.setItem("cart", JSON.stringify(newCart));
+    console.log(cart.products.filter((product, i) => i !== index));
   };
   return (
     <Container>
@@ -222,25 +227,6 @@ const Cart = () => {
           <TopTexts>
             <TopText>Shopping bag({quantity})</TopText>
           </TopTexts>
-          {user ? (
-            <StripeCheckout
-              name="Lama Shop"
-              image="https://avatars.githubusercontent.com/u/1486366?v=4"
-              billingAddress
-              shippingAddress
-              description="Your total is $20"
-              amount={cart.total * 100}
-              token={onToken}
-              stripeKey={KEY}
-            >
-              <Button>CHECKOUT NOW</Button>
-            </StripeCheckout>
-          ) : (
-            <>
-              <Button onClick={() => setError(true)}>CHECKOUT NOW</Button>
-              {error && <Error>Please Login To Continue..</Error>}
-            </>
-          )}
         </Top>
         <Bottom>
           <Info>
@@ -281,7 +267,7 @@ const Cart = () => {
                   <DeleteButton>
                     <Clear
                       style={{ cursor: "pointer" }}
-                      onClick={handleRemove(index)}
+                      onClick={() => handleRemove(index)}
                     />
                   </DeleteButton>
                 </Product>

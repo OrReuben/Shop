@@ -3,6 +3,7 @@ import {
   Add,
   DashboardRounded,
   ExitToApp,
+  PagesRounded,
   Search,
   ShoppingCartOutlined,
   VerifiedUser,
@@ -27,14 +28,14 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  ${mobile({ padding: "10px 0px" })}
+  ${mobile({ padding: "10px 0px", justifyContent:"flex-end" })}
 `;
 
 const Left = styled.div`
   flex: 0.5;
   display: flex;
   align-items: center;
-  ${mobile({ justifyContent: "center" })}
+  ${mobile({ justifyContent: "flex-start" })}
 `;
 
 const Language = styled.div`
@@ -55,25 +56,30 @@ const SearchContainer = styled.div`
 const Input = styled.input`
   border: none;
   ${mobile({ width: "50px" })}
+
+  &:focus{
+    outline: none;
+    border:none
+  }
 `;
 
 const Center = styled.div`
   flex: 3;
   text-align: center;
-  ${mobile({ flex: 1 })}
+  ${mobile({ flex: 2 })}
 `;
 
 const Logo = styled.h1`
   font-weight: bold;
   cursor: pointer;
-  ${mobile({ fontSize: "24px", marginLeft: "50px" })}
+  ${mobile({ fontSize: "24px", marginLeft: "10px" })}
 `;
 const Right = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  ${mobile({ flex: 2, justifyContent: "center" })}
+  ${mobile({ flex: 1, justifyContent: "flex-end", marginRight:20 })}
 `;
 
 const MenuItem = styled.div`
@@ -81,6 +87,7 @@ const MenuItem = styled.div`
   cursor: pointer;
   margin-left: 25px;
   transition: all 0.2s;
+  text-align: center;
 
   &:hover {
     font-weight: 700;
@@ -116,6 +123,7 @@ const PhoneIconText = styled.span`
   margin-top: 5px;
   font-size: 8px;
   font-weight: 700;
+  text-align: center;
 `;
 
 const Navbar = () => {
@@ -156,6 +164,13 @@ const Navbar = () => {
         <Right>
           {!user ? (
             <>
+              <MenuItem onClick={() => navigate("/products")}>
+                AUCTIONS
+              </MenuItem>
+              <PhoneIcon onClick={() => navigate("/products")}>
+                <PagesRounded />
+                <PhoneIconText>PRODUCTS</PhoneIconText>
+              </PhoneIcon>
               <MenuItem onClick={() => navigate("/register")}>
                 REGISTER
               </MenuItem>
@@ -173,16 +188,24 @@ const Navbar = () => {
           ) : (
             <>
               <MenuText>WELCOME {user.username.toUpperCase()}</MenuText>
-              <MenuItem onClick={() => navigate("/auction")}>AUCTIONS</MenuItem>
+              <MenuItem onClick={() => navigate("/auction")}>POST</MenuItem>
               <PhoneIcon onClick={() => navigate("/auction")}>
                 <Add />
-                <PhoneIconText>AUCTIONS</PhoneIconText>
+                <PhoneIconText>POST</PhoneIconText>
+              </PhoneIcon>
+              <MenuItem onClick={() => navigate("/products")}>
+                AUCTIONS
+              </MenuItem>
+              <PhoneIcon onClick={() => navigate("/products")}>
+                <PagesRounded />
+                <PhoneIconText>PRODUCTS</PhoneIconText>
               </PhoneIcon>
               <MenuItem onClick={handleLogout}>LOGOUT</MenuItem>
               <PhoneIcon onClick={handleLogout}>
                 <ExitToApp />
                 <PhoneIconText>LOGOUT</PhoneIconText>
               </PhoneIcon>
+              
             </>
           )}
           <Link to="/cart">

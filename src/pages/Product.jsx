@@ -230,8 +230,8 @@ const Product = () => {
   };
 
   let user = "";
-  const cheak = useSelector((state) => state.user.currentUser);
-  cheak !== null ? (user = cheak) : (user = "");
+  const check = useSelector((state) => state.user.currentUser);
+  check !== null ? (user = check) : (user = "");
 
   const handleBid = async () => {
     if (timeCounter !== "THE AUCTION HAS ENDED") {

@@ -6,6 +6,7 @@ const Clock = ({ endAuction, timeCounter, setTimeCounter, product }) => {
   const endTimeInMS =
     TimeInMS < Date.parse(endAuction) ? Date.parse(endAuction) : endAuction;
   const timeLeft = endTimeInMS - TimeInMS;
+  console.log(timeLeft); 
 
   useEffect(() => {
     setTimeout(() => {

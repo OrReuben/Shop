@@ -15,10 +15,14 @@ const cartSlice = createSlice({
         action.payload.status === "ONGOING"
           ? action.payload.price * action.payload.quantity
           : action.payload.bidPrice * action.payload.quantity;
-          console.log(state.products);
     },
     removeProduct: (state, action) => {
-      state.products.filter((product, i) => i !== action.payload);
+      state.products.splice(action.payload.index, 1);
+      state.quantity -= 1;
+      state.total -=
+      action.payload.product.status === "ONGOING"
+        ? action.payload.product.price * action.payload.product.quantity
+        : action.payload.product.bidPrice * action.payload.product.quantity;
     },
   },
 });

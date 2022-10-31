@@ -11,7 +11,7 @@ import styled from "styled-components";
 import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
 import { addProduct } from "../Redux/cartRedux";
-import { userRequest } from "../requestMethods";
+import { publicRequest } from "../requestMethods";
 import { mobile } from "../responsive";
 
 const Container = styled.div`
@@ -149,7 +149,7 @@ const MyAuctions = () => {
   const dispatch = useDispatch();
   const handleRemove = async (id) => {
     try {
-      await userRequest
+      await publicRequest
         .delete(`/products/${id}`)
         .then(() => window.location.reload());
     } catch {
@@ -161,11 +161,11 @@ const MyAuctions = () => {
 
   const handleRepost = async (id) => {
     try {
-      await userRequest
+      await publicRequest
         .get("/products/find/" + id)
         .then((res) => setRepostProduct(res.data));
       if (!isNaN(repostProduct.timeLeft)) {
-        await userRequest
+        await publicRequest
           .put(`/products/${id}`, {
             status: "ONGOING",
             endAuction: TimeInMS + repostProduct.timeLeft,
@@ -184,7 +184,7 @@ const MyAuctions = () => {
         const quantity = 1;
         const color = "red";
         const size = "XS";
-        await userRequest
+        await publicRequest
           .get("/products/find/" + id)
           .then((res) => setProduct(res.data));
         if (product.img) {
@@ -199,7 +199,7 @@ const MyAuctions = () => {
     const getMyAuctions = async () => {
       if (isMounted) {
         try {
-          await userRequest
+          await publicRequest
             .get(`/products/get/${user.username}`)
             .then((res) => setMyAuctions(res.data));
           setLoading(false);
@@ -212,7 +212,7 @@ const MyAuctions = () => {
     const getMyBids = async () => {
       if (isMounted) {
         try {
-          await userRequest
+          await publicRequest
             .get(`/products/gets/${user.username}`)
             .then((res) => setBiddedAuctions(res.data));
           setLoadingBid(false);

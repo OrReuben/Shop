@@ -208,11 +208,8 @@ const Cart = () => {
 
   const quantity = useSelector((state) => state.cart.quantity);
   const dispatch = useDispatch();
-  const handleRemove = (index) => {
-  // const newCart = cart.products.filter((product, i) => i !== index)
-    dispatch(removeProduct(index))
-    // localStorage.setItem("cart", JSON.stringify(newCart));
-    // console.log(cart.products.filter((product, i) => i !== index));
+  const handleRemove = (index, product) => {
+    dispatch(removeProduct({index:index, product:product}));
   };
   return (
     <Container>
@@ -267,7 +264,7 @@ const Cart = () => {
                   <DeleteButton>
                     <Clear
                       style={{ cursor: "pointer" }}
-                      onClick={() => handleRemove(index)}
+                      onClick={() => handleRemove(index, product)}
                     />
                   </DeleteButton>
                 </Product>
@@ -279,7 +276,7 @@ const Cart = () => {
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
             <SummaryItem>
               <SummaryItemText>Subtotal</SummaryItemText>
-              <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
+              <SummaryItemPrice>$ {isNaN(cart.total) ? "0" : cart.total}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Estimated Shipping</SummaryItemText>
@@ -291,7 +288,9 @@ const Cart = () => {
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
+              <SummaryItemPrice>
+                $ {isNaN(cart.total) ? "0" : cart.total}
+              </SummaryItemPrice>
             </SummaryItem>
             {user ? (
               <StripeCheckout

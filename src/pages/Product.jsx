@@ -70,16 +70,19 @@ const FilterTitle = styled.span`
   font-weight: 200;
 `;
 
-const FilterColor = styled.div`
+const FilterColor = styled.button`
   width: 20px;
   height: 20px;
   border-radius: 50%;
   background-color: ${(props) => props.color};
   margin: 0px 5px;
   cursor: pointer;
+  border:none;
+  transition: transform 0.5s;
 
-  &:active {
-    border: 1px solid green;
+  &:focus {
+    border: 3px solid #1b0303;
+    transform: scale(1.3);
   }
 `;
 
@@ -185,6 +188,10 @@ const LastBidder = styled.h2`
   margin: 5px 12px 2px;
 `;
 
+const ErrorBuyNow = styled.p`
+  color: red;
+  padding-top: 10px;
+`;
 const Product = () => {
   const location = useLocation();
   const id = location.pathname.split("/")[2];
@@ -199,6 +206,7 @@ const Product = () => {
   const [userError, setUserError] = useState(false);
   const [auctionError, setAuctionError] = useState(false);
   const [sameUserError, setSameUserError] = useState(false);
+  const [buyNowErr, setBuyNowErr] = useState(false);
   const [timeCounter, setTimeCounter] = useState("Loading...");
 
   useEffect(() => {
@@ -226,7 +234,9 @@ const Product = () => {
   // };
 
   const handleClick = () => {
-    dispatch(addProduct({ ...product, quantity, color, size }));
+    if (color.length > 0 && size.length > 0) {
+      dispatch(addProduct({ ...product, quantity, color, size }));
+    } else setBuyNowErr(true);
   };
 
   let user = "";
@@ -320,6 +330,9 @@ const Product = () => {
               )
             )}
           </AddContainer>
+          {buyNowErr && (
+            <ErrorBuyNow>Please select a color and size</ErrorBuyNow>
+          )}
           <BidContainer>
             <Input
               onChange={(e) => setNewBid(e.target.value)}

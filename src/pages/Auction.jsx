@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 import { useState } from "react";
-import { userRequest } from "../requestMethods.js";
+import { publicRequest } from "../requestMethods.js";
 import { useSelector } from "react-redux";
 
 const Container = styled.div`
@@ -146,7 +146,7 @@ const Auction = () => {
         timeLeft,
         status: "ONGOING",
       };
-      userRequest.post("/products", newPost).then(() => navigate("/products"));
+      publicRequest.post("/products", newPost).then(() => navigate("/products"));
     } else setError(true);
   };
   return (

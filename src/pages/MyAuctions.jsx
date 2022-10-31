@@ -57,19 +57,19 @@ const DashboardTableHeaders = styled.th`
   text-align: left;
   padding: 8px;
   text-align: center;
-  ${mobile({ fontSize: "9px" })}
+  ${mobile({ fontSize: "7px" })}
 `;
 const DashboardTableContent = styled.td`
   border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;
   text-align: center;
-  ${mobile({ fontSize: "9px" })}
+  ${mobile({ fontSize: "6px" })}
 `;
 const TableImage = styled.img`
   width: 100px;
   height: 90px;
-  ${mobile({ width: "50px", height: "45px" })}
+  ${mobile({ width: "35px", height: "30px" })}
 `;
 const TableProduct = styled.h4``;
 const TableCurrentBid = styled.span``;
@@ -100,7 +100,17 @@ const Icon = styled.div`
   margin: 5px 0px;
 
   &:hover {
-    border: 1px solid black;
+    color: ${(props) =>
+      props.color === "red"
+        ? "red"
+        : props.color === "blue"
+        ? "blue"
+        : "green"};
+  }
+  svg {
+    font-size: 15px;
+    transition: 0.3s;
+    ${mobile({ fontSize: "10px" })}
   }
 `;
 
@@ -108,6 +118,8 @@ const IconText = styled.span`
   margin-top: 10px;
   font-size: 8px;
   font-weight: 700;
+  transition: 0.3s;
+  ${mobile({ fontSize: "5.5px", marginTop: "7px" })}
 `;
 
 const Links = styled.div`
@@ -125,7 +137,7 @@ const LinkText = styled.a`
   padding: 10px;
   cursor: pointer;
   transition: 0.3s;
-
+  ${mobile({fontSize:"12px"})}
   &:hover {
     color: black;
   }
@@ -296,23 +308,28 @@ const MyAuctions = () => {
                             </DashboardTableContent>
                             <DashboardTableContent>
                               <TableIcon>
-                                <Icon onClick={() => handleRemove(auction._id)}>
-                                  <Clear style={{ fontSize: "15px" }} />
+                                <Icon
+                                  color="red"
+                                  onClick={() => handleRemove(auction._id)}
+                                >
+                                  <Clear />
                                   <IconText>REMOVE</IconText>
                                 </Icon>
                                 {auction.status === "ENDED" &&
                                   (!error ? (
                                     <Icon
+                                      color="blue"
                                       onClick={() => handleRepost(auction._id)}
                                     >
-                                      <PostAdd style={{ fontSize: "15px" }} />
+                                      <PostAdd />
                                       <IconText>REPOST</IconText>
                                     </Icon>
                                   ) : (
                                     <Icon
+                                      color="green"
                                       onClick={() => handleRepost(auction._id)}
                                     >
-                                      <Check style={{ fontSize: "15px" }} />
+                                      <Check />
                                       <IconText>SUBMIT</IconText>
                                     </Icon>
                                   ))}
@@ -370,12 +387,10 @@ const MyAuctions = () => {
                               {auction.status === "ENDED" ? (
                                 <TableIcon>
                                   <Icon
+                                    color="blue"
                                     onClick={() => handleClick(auction._id)}
                                   >
-                                    <ShoppingCartOutlined
-                                      style={{ fontSize: "15px" }}
-                                      onClick={() => handleRemove(auction._id)}
-                                    />
+                                    <ShoppingCartOutlined />
                                     <IconText>CART</IconText>
                                   </Icon>
                                 </TableIcon>

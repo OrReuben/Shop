@@ -110,18 +110,33 @@ const MenuText = styled.div`
   ${mobile({ display: "none" })}
 `;
 
-const PhoneIcon = styled.span`
+const PhoneIcon = styled.button`
   align-items: center;
   justify-content: center;
   flex-direction: column;
   cursor: pointer;
-  margin: 0px 10px;
+  margin: 0px 7px;
   display: none;
+  background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+
+  &:focus{
+    color:red
+  }
   ${mobile({ display: "flex" })}
+  
+  svg{
+    font-size:20px;
+  }
 `;
 const PhoneIconText = styled.span`
   margin-top: 5px;
-  font-size: 8px;
+  font-size: 7px;
   font-weight: 700;
   text-align: center;
 `;

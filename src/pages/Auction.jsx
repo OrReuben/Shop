@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 
 const Container = styled.div`
   width: 100vw;
-  height: 100vh;
+  height:100vh;
   background: linear-gradient(
       rgba(255, 255, 255, 0.5),
       rgba(255, 255, 255, 0.5)
@@ -19,13 +19,13 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  ${mobile({height:"auto", padding: "10px 0px"})}
 `;
 
 const Wrapper = styled.div`
   padding: 20px;
-  width: 40%;
+  width: 51%;
   background-color: white;
-  ${mobile({ width: "75%" })}
 `;
 
 const Title = styled.h1`

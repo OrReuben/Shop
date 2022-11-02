@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { mobile } from "../responsive";
@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 
 const Container = styled.div`
   width: 100vw;
-  height:100vh;
+  height: 100vh;
   background: linear-gradient(
       rgba(255, 255, 255, 0.5),
       rgba(255, 255, 255, 0.5)
@@ -19,7 +19,7 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  ${mobile({height:"auto", padding: "10px 0px"})}
+  ${mobile({ height: "auto", padding: "10px 0px" })}
 `;
 
 const Wrapper = styled.div`
@@ -55,6 +55,16 @@ const Input = styled.input`
 const Agreement = styled.span`
   font-size: 12px;
   margin: 20px 0px;
+
+  a {
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.1s;
+
+    &:hover {
+      font-weight: 700;
+    }
+  }
 `;
 
 const Button = styled.button`
@@ -94,7 +104,7 @@ const HomeButton = styled.p`
   cursor: pointer;
   margin-bottom: 10px;
   ${mobile({
-    padding: "5px",
+    padding: "1px",
     fontSize: "12px",
     height: "100%",
     display: "flex",
@@ -104,8 +114,16 @@ const HomeButton = styled.p`
 `;
 
 const Error = styled.span`
-  text-align: center;
   color: red;
+  padding-top: 5px;
+
+  ${mobile({ fontSize: "12px" })}
+`;
+
+const Suggestion = styled.div`
+  padding-top: 5px;
+  color: gold;
+  ${mobile({ fontSize: "12px", paddingTop: "10px" })}
 `;
 
 const Auction = () => {
@@ -119,17 +137,82 @@ const Auction = () => {
   const [bidPrice, setBidPrice] = useState("");
   const [price, setPrice] = useState("");
   const [endAuction, setEndAuction] = useState("");
-  const [error, setError] = useState(false);
   const user = useSelector((state) => state.user.currentUser);
+  const [validationError, setValidationError] = useState({});
+  const [suggestions, setSuggestions] = useState({});
 
   const endTimeInMS = Date.parse(endAuction);
   const TimeInMS = Date.parse(new Date());
   const timeLeft = endTimeInMS - TimeInMS;
 
-  console.log();
+  useEffect(() => {
+    if (categories.length === 1) {
+      setSuggestions({
+        status: true,
+        messege: "You can set more than one category using space",
+      });
+    } else if (size.length === 1) {
+      setSuggestions({
+        status: true,
+        messege: "You can set more than one size using space",
+      });
+    } else if (color.length === 1) {
+      setSuggestions({
+        status: true,
+        messege: "You can set more than one color using space",
+      });
+    } else {
+      setSuggestions({
+        status: false,
+      });
+    }
+  }, [categories, size, color]);
+
+  useEffect(() => {
+    if (title.length !== 0 && title.length < 2) {
+      setValidationError({
+        status: true,
+        messege: "Title must be valid!",
+      });
+    } else if (desc.length !== 0 && desc.length < 2) {
+      setValidationError({
+        status: true,
+        messege: "Description must be valid!",
+      });
+    } else if (img.length !== 0 && img.length < 2) {
+      setValidationError({
+        status: true,
+        messege: "Image link must be valid!",
+      });
+    } else if (bidPrice.length !== 0 && bidPrice > price) {
+      setValidationError({
+        status: true,
+        messege: "Starting bid price must be smaller than the buy now price!",
+      });
+    } else if (price.length !== 0 && price < bidPrice) {
+      setValidationError({
+        status: true,
+        messege: "Buy now price must be higher than the starting bid price!",
+      });
+    } else if (endTimeInMS < TimeInMS) {
+      setValidationError({
+        status: true,
+        messege: "Please select a valid date!",
+      });
+    } else if (endTimeInMS < TimeInMS) {
+      setValidationError({
+        status: true,
+        messege: "Please select a valid date!",
+      });
+    } else {
+      setValidationError({
+        status: false,
+      });
+    }
+  }, [title, desc, img, bidPrice, price, endTimeInMS, TimeInMS]);
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (endTimeInMS > TimeInMS) {
+    try {
       const newPost = {
         title,
         desc,
@@ -146,8 +229,10 @@ const Auction = () => {
         timeLeft,
         status: "ONGOING",
       };
-      publicRequest.post("/products", newPost).then(() => navigate("/products"));
-    } else setError(true);
+      publicRequest
+        .post("/products", newPost)
+        .then(() => navigate("/products"));
+    } catch {}
   };
   return (
     <Container>
@@ -191,6 +276,7 @@ const Auction = () => {
           <Input
             placeholder="End Time"
             type="datetime-local"
+            defaultValue={new Date()}
             onChange={(e) => setEndAuction(e.target.value)}
           />
           <Agreement>
@@ -208,6 +294,7 @@ const Auction = () => {
                 color.length === 0 ||
                 bidPrice.length === 0 ||
                 price.length === 0 ||
+                validationError.status ||
                 isNaN(endTimeInMS)
               }
             >
@@ -215,7 +302,10 @@ const Auction = () => {
             </Button>
             <HomeButton onClick={() => navigate("/")}>BACK HOME..</HomeButton>
           </ButtonContainer>
-          <Error>{error && "Please set a valid date"}</Error>
+          <div style={{display:"flex", flexDirection:"column"}}>
+          {suggestions.status && <Suggestion>{suggestions.messege}</Suggestion>}
+          {validationError.status && <Error>{validationError.messege}</Error>}
+          </div>
         </Form>
       </Wrapper>
     </Container>

@@ -1,5 +1,5 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 import { useState } from "react";
@@ -46,7 +46,17 @@ const Input = styled.input`
 
 const Agreement = styled.span`
   font-size: 12px;
-  margin: 20px 0px;
+  margin: 10px 0px;
+
+  a {
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.1s;
+
+    &:hover {
+      font-weight: 700;
+    }
+  }
 `;
 
 const Button = styled.button`
@@ -80,6 +90,10 @@ const HomeButton = styled.p`
   margin-bottom: 10px;
 `;
 
+const Error = styled.span`
+  color: red;
+`;
+
 const Register = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
@@ -88,6 +102,40 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [validationError, setValidationError] = useState({});
+
+
+  useEffect(() => {
+    if (name.length !== 0 && name.length === 1) {
+      setValidationError({
+        status: true,
+        messege: "Must be a valid name!",
+      });
+    } else if (lastName.length !== 0 && lastName.length === 1) {
+      setValidationError({
+        status: true,
+        messege: "Must be a valid last name!",
+      });
+    } else if (username.length !== 0 && username.length < 5) {
+      setValidationError({
+        status: true,
+        messege: "Username must be atleast 5 characters!",
+      });
+    } else if (password.length !== 0 && password.length < 8) {
+      setValidationError({
+        status: true,
+        messege: "Password must be atleast 8 characters!",
+      });
+    } else if (confirmPassword.length !== 0 && confirmPassword !== password) {
+      setValidationError({
+        status: true,
+        messege: "Passwords do not match!",
+      });
+    } else
+      setValidationError({
+        status: false,
+      });
+  }, [name, lastName, username, password, confirmPassword]);
   const handleSubmit = (e) => {
     e.preventDefault();
     const newUser = {
@@ -118,6 +166,7 @@ const Register = () => {
           />
           <Input
             placeholder="Email"
+            type="email"
             onChange={(e) => setEmail(e.target.value)}
           />
           <Input
@@ -134,6 +183,10 @@ const Register = () => {
             By creating an account, I consent to the processing of my personal
             data in accordance with the <b>PRIVACY POLICY</b>
           </Agreement>
+          <Agreement>
+            Already have an account? <Link to="/login">Sign In</Link>
+          </Agreement>
+
           <ButtonContainer>
             <Button
               disabled={
@@ -141,13 +194,15 @@ const Register = () => {
                 lastName.length === 0 ||
                 email.length === 0 ||
                 password.length === 0 ||
-                confirmPassword.length === 0
+                confirmPassword.length === 0 ||
+                validationError.status
               }
             >
               CREATE
             </Button>
-            <HomeButton onClick={() => navigate("/")}>BACK HOME..</HomeButton>
+            <HomeButton onClick={() => navigate("/")}>BACK HOME</HomeButton>
           </ButtonContainer>
+          {validationError.status && <Error>{validationError.messege}</Error>}
         </Form>
       </Wrapper>
     </Container>

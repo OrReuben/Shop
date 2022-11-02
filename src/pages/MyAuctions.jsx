@@ -9,11 +9,19 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import Footer from "../Components/Footer";
+import Loader from "../Components/Loader";
 import Navbar from "../Components/Navbar";
 import { addProduct } from "../Redux/cartRedux";
 import { publicRequest } from "../requestMethods";
 import { mobile } from "../responsive";
 
+const LoadingContainer = styled.div`
+text-align: center;
+width: 90vw;
+display: flex;
+justify-content: center;
+align-content: center;
+`
 const Container = styled.div`
   align-items: center;
   display: flex;
@@ -22,7 +30,7 @@ const Container = styled.div`
   overflow: hidden;
 `;
 const Wrapper = styled.div`
-  width: 85%;
+  width: 90%;
   background-color: RGB(223, 207, 190);
   border-radius: 5%;
   padding: 1% 5% 5% 5%;
@@ -57,14 +65,14 @@ const DashboardTableHeaders = styled.th`
   text-align: left;
   padding: 8px;
   text-align: center;
-  ${mobile({ fontSize: "7px" })}
+  ${mobile({ fontSize: "8px", padding: "8px 3px" })}
 `;
 const DashboardTableContent = styled.td`
   border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;
   text-align: center;
-  ${mobile({ fontSize: "6px" })}
+  ${mobile({ fontSize: "9px", padding: "8px 2px"  })}
 `;
 const TableImage = styled.img`
   width: 100px;
@@ -137,7 +145,7 @@ const LinkText = styled.a`
   padding: 10px;
   cursor: pointer;
   transition: 0.3s;
-  ${mobile({fontSize:"12px"})}
+  ${mobile({ fontSize: "12px" })}
   &:hover {
     color: black;
   }
@@ -249,7 +257,9 @@ const MyAuctions = () => {
           </Links>
           <DashboardText id="auctions">YOUR AUCTIONS</DashboardText>
           {loading ? (
-            <h1>Loading...</h1>
+            <LoadingContainer>
+            <Loader />
+            </LoadingContainer>
           ) : (
             <DashboardContainer>
               <DashboardTableContainer>
@@ -347,12 +357,14 @@ const MyAuctions = () => {
           <Hr />
           <DashboardText id="win">AUCTIONS YOU'VE BID</DashboardText>
           {loadingBids ? (
-            <h1>Loading...</h1>
+            <LoadingContainer>
+            <Loader />
+            </LoadingContainer>
           ) : (
             <DashboardContainer>
               <DashboardTableContainer>
                 {biddedAuctions.length === 0 ? (
-                  <Error>You have no auctions running!</Error>
+                  <Error>You have no bids running!</Error>
                 ) : (
                   <DashboardTable>
                     <>

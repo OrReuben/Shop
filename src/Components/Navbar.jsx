@@ -9,7 +9,7 @@ import {
   VerifiedUser,
   VpnKey,
 } from "@material-ui/icons";
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 import { useSelector } from "react-redux";
@@ -28,7 +28,7 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  ${mobile({ padding: "10px 0px", justifyContent:"flex-end" })}
+  ${mobile({ padding: "10px 0px", justifyContent: "flex-end" })}
 `;
 
 const Left = styled.div`
@@ -51,15 +51,23 @@ const SearchContainer = styled.div`
   margin-left: 25px;
   padding: 5px;
   ${mobile({ display: "none" })}
+
+  svg {
+    color: gray;
+
+    &:hover{
+      color:blue
+    }
+  }
 `;
 
 const Input = styled.input`
   border: none;
   ${mobile({ width: "50px" })}
 
-  &:focus{
+  &:focus {
     outline: none;
-    border:none
+    border: none;
   }
 `;
 
@@ -79,7 +87,7 @@ const Right = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  ${mobile({ flex: 1, justifyContent: "flex-end", marginRight:20 })}
+  ${mobile({ flex: 1, justifyContent: "flex-end", marginRight: 20 })}
 `;
 
 const MenuItem = styled.div`
@@ -118,20 +126,20 @@ const PhoneIcon = styled.button`
   margin: 0px 7px;
   display: none;
   background: none;
-	color: inherit;
-	border: none;
-	padding: 0;
-	font: inherit;
-	cursor: pointer;
-	outline: inherit;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
 
-  &:focus{
-    color:red
+  &:focus {
+    color: red;
   }
   ${mobile({ display: "flex" })}
-  
-  svg{
-    font-size:20px;
+
+  svg {
+    font-size: 20px;
   }
 `;
 const PhoneIconText = styled.span`
@@ -145,7 +153,12 @@ const Navbar = () => {
   const quantity = useSelector((state) => state.cart.quantity);
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.currentUser);
+  const [search, setSearch] = useState("");
 
+  const handleSearch = () => {
+    navigate(`/products/${search}`);
+    setSearch('')
+  };
   const handleLogout = async () => {
     localStorage.removeItem("logged");
     localStorage.removeItem("persist:root");
@@ -158,8 +171,13 @@ const Navbar = () => {
         <Left>
           <Language>EN</Language>
           <SearchContainer>
-            <Input placeholder="Search.." autoFocus />
-            <Search style={{ color: "gray", fontSize: 16 }} />
+            <Input
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search.."
+              value={search}
+              autoFocus
+            />
+            <Search onClick={handleSearch} style={{fontSize:"16px", cursor:"pointer"}}/>
           </SearchContainer>
           {user && (
             <>
@@ -220,7 +238,6 @@ const Navbar = () => {
                 <ExitToApp />
                 <PhoneIconText>LOGOUT</PhoneIconText>
               </PhoneIcon>
-              
             </>
           )}
           <Link to="/cart">

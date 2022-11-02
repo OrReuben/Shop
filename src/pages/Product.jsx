@@ -29,7 +29,7 @@ const Image = styled.img`
   width: 100%;
   height: 90vh;
   object-fit: cover;
-  ${mobile({ height: "40vh" })}
+  ${mobile({ height: "50vh" })}
 `;
 
 const InfoContainer = styled.div`
@@ -40,6 +40,8 @@ const InfoContainer = styled.div`
 
 const Title = styled.h1`
   font-weight: 200;
+  ${mobile({ fontSize: "30px" })}
+
 `;
 
 const Desc = styled.p`
@@ -50,6 +52,8 @@ const Price = styled.span`
   font-weight: 100;
   font-size: 40px;
   margin: 5px 0px;
+  ${mobile({ fontSize: "24px" })}
+
 `;
 
 const FilterContainer = styled.div`
@@ -68,6 +72,8 @@ const Filter = styled.div`
 const FilterTitle = styled.span`
   font-size: 20px;
   font-weight: 200;
+  ${mobile({ fontSize: "15px" })}
+
 `;
 
 const FilterColor = styled.button`
@@ -79,6 +85,8 @@ const FilterColor = styled.button`
   cursor: pointer;
   border:none;
   transition: transform 0.5s;
+  ${mobile({ width: "15px", height:"15px" })}
+
 
   &:focus {
     border: 3px solid #1b0303;
@@ -186,6 +194,8 @@ const Error = styled.p`
 
 const LastBidder = styled.h2`
   margin: 5px 12px 2px;
+  ${mobile({ fontSize: "20px" })}
+
 `;
 
 const ErrorBuyNow = styled.p`

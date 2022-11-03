@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 import { useState } from "react";
-import { userRequest } from "../requestMethods.js";
+import { publicRequest } from "../requestMethods.js";
 import { useSelector } from "react-redux";
 
 const Container = styled.div`
@@ -19,13 +19,13 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  ${mobile({ height: "auto", padding: "10px 0px" })}
 `;
 
 const Wrapper = styled.div`
   padding: 20px;
-  width: 40%;
+  width: 51%;
   background-color: white;
-  ${mobile({ width: "75%" })}
 `;
 
 const Title = styled.h1`
@@ -44,11 +44,27 @@ const Input = styled.input`
   min-width: 40%;
   margin: 10px 10px 0px 0px;
   padding: 10px;
+
+  &::-webkit-outer-spin-button,
+  ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 `;
 
 const Agreement = styled.span`
   font-size: 12px;
   margin: 20px 0px;
+
+  a {
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.1s;
+
+    &:hover {
+      font-weight: 700;
+    }
+  }
 `;
 
 const Button = styled.button`
@@ -88,13 +104,26 @@ const HomeButton = styled.p`
   cursor: pointer;
   margin-bottom: 10px;
   ${mobile({
-    padding: "5px",
+    padding: "1px",
     fontSize: "12px",
     height: "100%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   })}
+`;
+
+const Error = styled.span`
+  color: red;
+  padding-top: 5px;
+
+  ${mobile({ fontSize: "12px" })}
+`;
+
+const Suggestion = styled.div`
+  padding-top: 5px;
+  color: gold;
+  ${mobile({ fontSize: "12px", paddingTop: "10px" })}
 `;
 
 const Auction = () => {
@@ -105,34 +134,103 @@ const Auction = () => {
   const [categories, setCategories] = useState([]);
   const [size, setSize] = useState([]);
   const [color, setColor] = useState([]);
-  const [bidPrice, setBidPrice] = useState("");
-  const [price, setPrice] = useState("");
+  const [bidPrice, setBidPrice] = useState(0);
+  const [price, setPrice] = useState(0);
   const [endAuction, setEndAuction] = useState("");
   const user = useSelector((state) => state.user.currentUser);
+  const [validationError, setValidationError] = useState({});
+  const [suggestions, setSuggestions] = useState({});
 
   const endTimeInMS = Date.parse(endAuction);
   const TimeInMS = Date.parse(new Date());
   const timeLeft = endTimeInMS - TimeInMS;
 
-  console.log();
+  useEffect(() => {
+    if (categories.length === 1) {
+      setSuggestions({
+        status: true,
+        messege: "You can set more than one category using space",
+      });
+    } else if (size.length === 1) {
+      setSuggestions({
+        status: true,
+        messege: "You can set more than one size using space",
+      });
+    } else if (color.length === 1) {
+      setSuggestions({
+        status: true,
+        messege: "You can set more than one color using space",
+      });
+    } else {
+      setSuggestions({
+        status: false,
+      });
+    }
+  }, [categories, size, color]);
+
+  useEffect(() => {
+    if (title.length !== 0 && title.length < 2) {
+      setValidationError({
+        status: true,
+        messege: "Title must be valid!",
+      });
+    } else if (desc.length !== 0 && desc.length < 2) {
+      setValidationError({
+        status: true,
+        messege: "Description must be valid!",
+      });
+    } else if (img.length !== 0 && img.length < 2) {
+      setValidationError({
+        status: true,
+        messege: "Image link must be valid!",
+      });
+      // } else if (bidPrice.length !== 0 && bidPrice > price) {
+      //   setValidationError({
+      //     status: true,
+      //     messege: "Starting bid price must be smaller than the buy now price!",
+      //   });
+      // } else if (price.length !== 0 && price < bidPrice) {
+      //   setValidationError({
+      //     status: true,
+      //     messege: "Buy now price must be higher than the starting bid price!",
+      //   });
+    } else if (endTimeInMS < TimeInMS) {
+      setValidationError({
+        status: true,
+        messege: "Please select a valid date!",
+      });
+    } else if (endTimeInMS < TimeInMS) {
+      setValidationError({
+        status: true,
+        messege: "Please select a valid date!",
+      });
+    } else {
+      setValidationError({
+        status: false,
+      });
+    }
+  }, [title, desc, img, bidPrice, price, endTimeInMS, TimeInMS]);
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newPost = {
-      title,
-      desc,
-      img,
-      categories: categories.length > 0 && categories.toLowerCase().split(" "),
-      size: size.length > 0 && size.toUpperCase().split(" "),
-      color: color.length > 0 && color.toLowerCase().split(" "),
-      price,
-      bidPrice,
-      bidderUsername: "None",
-      posterUsername: user.username,
-      endAuction,
-      timeLeft,
-      status: "ONGOING",
-    };
-    userRequest.post("/products", newPost).then((res) => console.log(res.data));
+    try {
+      const newPost = {
+        title,
+        desc,
+        img,
+        categories:
+          categories.length > 0 && categories.toLowerCase().split(" "),
+        size: size.length > 0 && size.toUpperCase().split(" "),
+        color: color.length > 0 && color.toLowerCase().split(" "),
+        price,
+        bidPrice,
+        bidderUsername: "None",
+        posterUsername: user.username,
+        endAuction,
+        timeLeft,
+        status: "ONGOING",
+      };
+      publicRequest.post("/products", newPost).then(() => console.log(newPost));
+    } catch {}
   };
   return (
     <Container>
@@ -165,15 +263,18 @@ const Auction = () => {
           />
           <Input
             placeholder="Starting Bid Price"
+            type="number"
             onChange={(e) => setBidPrice(e.target.value)}
           />
           <Input
             placeholder="Buy Now Price"
+            type="number"
             onChange={(e) => setPrice(e.target.value)}
           />
           <Input
             placeholder="End Time"
             type="datetime-local"
+            defaultValue={new Date()}
             onChange={(e) => setEndAuction(e.target.value)}
           />
           <Agreement>
@@ -191,6 +292,7 @@ const Auction = () => {
                 color.length === 0 ||
                 bidPrice.length === 0 ||
                 price.length === 0 ||
+                validationError.status ||
                 isNaN(endTimeInMS)
               }
             >
@@ -198,6 +300,12 @@ const Auction = () => {
             </Button>
             <HomeButton onClick={() => navigate("/")}>BACK HOME..</HomeButton>
           </ButtonContainer>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {suggestions.status && (
+              <Suggestion>{suggestions.messege}</Suggestion>
+            )}
+            {validationError.status && <Error>{validationError.messege}</Error>}
+          </div>
         </Form>
       </Wrapper>
     </Container>

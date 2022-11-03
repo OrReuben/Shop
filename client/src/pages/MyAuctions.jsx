@@ -1,14 +1,27 @@
-import { Clear, PostAdd, ShoppingCartOutlined } from "@material-ui/icons";
+import {
+  Check,
+  Clear,
+  PostAdd,
+  ShoppingCartOutlined,
+} from "@material-ui/icons";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import Footer from "../Components/Footer";
+import Loader from "../Components/Loader";
 import Navbar from "../Components/Navbar";
 import { addProduct } from "../Redux/cartRedux";
-import { userRequest } from "../requestMethods";
+import { publicRequest } from "../requestMethods";
 import { mobile } from "../responsive";
 
+const LoadingContainer = styled.div`
+text-align: center;
+width: 90vw;
+display: flex;
+justify-content: center;
+align-content: center;
+`
 const Container = styled.div`
   align-items: center;
   display: flex;
@@ -17,7 +30,7 @@ const Container = styled.div`
   overflow: hidden;
 `;
 const Wrapper = styled.div`
-  width: 85%;
+  width: 90%;
   background-color: RGB(223, 207, 190);
   border-radius: 5%;
   padding: 1% 5% 5% 5%;
@@ -52,19 +65,20 @@ const DashboardTableHeaders = styled.th`
   text-align: left;
   padding: 8px;
   text-align: center;
-  ${mobile({ fontSize: "9px" })}
+  ${mobile({ fontSize: "8px", padding: "8px 3px" })}
 `;
 const DashboardTableContent = styled.td`
   border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;
   text-align: center;
-  ${mobile({ fontSize: "9px" })}
+  ${mobile({ fontSize: "9px", padding: "8px 2px"  })}
 `;
 const TableImage = styled.img`
   width: 100px;
   height: 90px;
-  ${mobile({ width: "50px", height: "45px" })}
+  object-fit: contain;
+  ${mobile({ width: "35px", height: "30px" })}
 `;
 const TableProduct = styled.h4``;
 const TableCurrentBid = styled.span``;
@@ -95,7 +109,17 @@ const Icon = styled.div`
   margin: 5px 0px;
 
   &:hover {
-    border: 1px solid black;
+    color: ${(props) =>
+      props.color === "red"
+        ? "red"
+        : props.color === "blue"
+        ? "blue"
+        : "green"};
+  }
+  svg {
+    font-size: 15px;
+    transition: 0.3s;
+    ${mobile({ fontSize: "10px" })}
   }
 `;
 
@@ -103,6 +127,8 @@ const IconText = styled.span`
   margin-top: 10px;
   font-size: 8px;
   font-weight: 700;
+  transition: 0.3s;
+  ${mobile({ fontSize: "5.5px", marginTop: "7px" })}
 `;
 
 const Links = styled.div`
@@ -119,6 +145,11 @@ const LinkText = styled.a`
   font-weight: 700;
   padding: 10px;
   cursor: pointer;
+  transition: 0.3s;
+  ${mobile({ fontSize: "12px" })}
+  &:hover {
+    color: black;
+  }
 `;
 
 const Hr = styled.hr`
@@ -129,20 +160,43 @@ const Hr = styled.hr`
 `;
 const MyAuctions = () => {
   const [product, setProduct] = useState({});
+  const [repostProduct, setRepostProduct] = useState({});
   const [myAuctions, setMyAuctions] = useState([]);
   const [biddedAuctions, setBiddedAuctions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingBids, setLoadingBid] = useState(true);
+  const [error, setError] = useState(false);
   const user = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
-  const handleRemove = (id) => {
-    userRequest.delete(`/products/${id}`).then(() => window.location.reload());
+  const handleRemove = async (id) => {
+    try {
+      await publicRequest
+        .delete(`/products/${id}`)
+        .then(() => window.location.reload());
+    } catch {
+      return error;
+    }
   };
 
-  const handleRepost = (id) => {
-    userRequest
-      .put(`/products/${id}`, { status: "ONGOING" })
-      .then((res) => console.log(res.data));
+  const TimeInMS = Date.parse(new Date());
+
+  const handleRepost = async (id) => {
+    try {
+      await publicRequest
+        .get("/products/find/" + id)
+        .then((res) => setRepostProduct(res.data));
+      if (!isNaN(repostProduct.timeLeft)) {
+        await publicRequest
+          .put(`/products/${id}`, {
+            status: "ONGOING",
+            endAuction: TimeInMS + repostProduct.timeLeft,
+          })
+          .then((res) => console.log(res.data));
+        window.location.reload();
+      } else setError(true);
+    } catch {
+      return error;
+    }
   };
 
   const handleClick = async (id) => {
@@ -151,7 +205,7 @@ const MyAuctions = () => {
         const quantity = 1;
         const color = "red";
         const size = "XS";
-        await userRequest
+        await publicRequest
           .get("/products/find/" + id)
           .then((res) => setProduct(res.data));
         if (product.img) {
@@ -162,28 +216,36 @@ const MyAuctions = () => {
   };
 
   useEffect(() => {
+    let isMounted = true;
     const getMyAuctions = async () => {
-      try {
-        await userRequest
-          .get(`/products/get/${user.username}`)
-          .then((res) => setMyAuctions(res.data));
-        setLoading(false);
-      } catch {
-        setLoading(false);
+      if (isMounted) {
+        try {
+          await publicRequest
+            .get(`/products/get/${user.username}`)
+            .then((res) => setMyAuctions(res.data));
+          setLoading(false);
+        } catch {
+          setLoading(false);
+        }
       }
     };
     getMyAuctions();
     const getMyBids = async () => {
-      try {
-        await userRequest
-          .get(`/products/gets/${user.username}`)
-          .then((res) => setBiddedAuctions(res.data));
-        setLoadingBid(false);
-      } catch {
-        setLoadingBid(false);
+      if (isMounted) {
+        try {
+          await publicRequest
+            .get(`/products/gets/${user.username}`)
+            .then((res) => setBiddedAuctions(res.data));
+          setLoadingBid(false);
+        } catch {
+          setLoadingBid(false);
+        }
       }
     };
     getMyBids();
+    return () => {
+      isMounted = false;
+    };
   }, [user]);
   return (
     <>
@@ -196,7 +258,9 @@ const MyAuctions = () => {
           </Links>
           <DashboardText id="auctions">YOUR AUCTIONS</DashboardText>
           {loading ? (
-            <h1>Loading...</h1>
+            <LoadingContainer>
+            <Loader />
+            </LoadingContainer>
           ) : (
             <DashboardContainer>
               <DashboardTableContainer>
@@ -224,7 +288,7 @@ const MyAuctions = () => {
                         </DashboardTableRow>
                       </tbody>
                       <tbody>
-                        {myAuctions.map((auction) => (
+                        {myAuctions.map((auction, index) => (
                           <DashboardTableRow key={auction._id}>
                             <DashboardTableContent>
                               <TableImage src={auction.img} />
@@ -255,22 +319,31 @@ const MyAuctions = () => {
                             </DashboardTableContent>
                             <DashboardTableContent>
                               <TableIcon>
-                                <Icon>
-                                  <Clear
-                                    style={{ fontSize: "15px" }}
-                                    onClick={() => handleRemove(auction._id)}
-                                  />
+                                <Icon
+                                  color="red"
+                                  onClick={() => handleRemove(auction._id)}
+                                >
+                                  <Clear />
                                   <IconText>REMOVE</IconText>
                                 </Icon>
-                                {auction.status === "ENDED" && (
-                                  <Icon>
-                                    <PostAdd
-                                      style={{ fontSize: "15px" }}
+                                {auction.status === "ENDED" &&
+                                  (!error ? (
+                                    <Icon
+                                      color="blue"
                                       onClick={() => handleRepost(auction._id)}
-                                    />
-                                    <IconText>REPOST</IconText>
-                                  </Icon>
-                                )}
+                                    >
+                                      <PostAdd />
+                                      <IconText>REPOST</IconText>
+                                    </Icon>
+                                  ) : (
+                                    <Icon
+                                      color="green"
+                                      onClick={() => handleRepost(auction._id)}
+                                    >
+                                      <Check />
+                                      <IconText>SUBMIT</IconText>
+                                    </Icon>
+                                  ))}
                               </TableIcon>
                             </DashboardTableContent>
                           </DashboardTableRow>
@@ -285,12 +358,14 @@ const MyAuctions = () => {
           <Hr />
           <DashboardText id="win">AUCTIONS YOU'VE BID</DashboardText>
           {loadingBids ? (
-            <h1>Loading...</h1>
+            <LoadingContainer>
+            <Loader />
+            </LoadingContainer>
           ) : (
             <DashboardContainer>
               <DashboardTableContainer>
                 {biddedAuctions.length === 0 ? (
-                  <Error>You have no auctions running!</Error>
+                  <Error>You have no bids running!</Error>
                 ) : (
                   <DashboardTable>
                     <>
@@ -325,12 +400,10 @@ const MyAuctions = () => {
                               {auction.status === "ENDED" ? (
                                 <TableIcon>
                                   <Icon
+                                    color="blue"
                                     onClick={() => handleClick(auction._id)}
                                   >
-                                    <ShoppingCartOutlined
-                                      style={{ fontSize: "15px" }}
-                                      onClick={() => handleRemove(auction._id)}
-                                    />
+                                    <ShoppingCartOutlined />
                                     <IconText>CART</IconText>
                                   </Icon>
                                 </TableIcon>

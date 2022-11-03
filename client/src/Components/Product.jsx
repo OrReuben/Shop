@@ -2,6 +2,7 @@ import { SearchOutlined } from "@material-ui/icons";
 import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { mobile } from "../responsive";
 
 const Info = styled.div`
   width: 100%;
@@ -20,9 +21,9 @@ const Info = styled.div`
 `;
 
 const Container = styled.div`
-  flex: 1;
-  margin: 5px;
+  margin: 7px;
   min-width: 280px;
+  max-width: 280px;
   height: 350px;
   display: flex;
   align-items: center;
@@ -33,6 +34,8 @@ const Container = styled.div`
   &:hover ${Info} {
     opacity: 1;
   }
+
+  ${mobile({ minWidth: "310px", maxWidth: "310px" })}
 `;
 const Circle = styled.div`
   width: 200px;
@@ -44,6 +47,7 @@ const Circle = styled.div`
 const Image = styled.img`
   height: 75%;
   width: 75%;
+  object-fit: contain;
   z-index: 2;
 `;
 

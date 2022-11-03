@@ -1,4 +1,4 @@
-import { Add, Remove } from "@material-ui/icons";
+// import { Add, Remove } from "@material-ui/icons";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
@@ -8,7 +8,7 @@ import Footer from "../Components/Footer";
 import Navbar from "../Components/Navbar";
 import Newsletter from "../Components/Newsletter";
 import { mobile } from "../responsive";
-import { publicRequest, userRequest } from "../requestMethods";
+import { publicRequest } from "../requestMethods";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct } from "../Redux/cartRedux";
 import Clock from "../Components/Clock";
@@ -28,8 +28,8 @@ const ImgContainer = styled.div`
 const Image = styled.img`
   width: 100%;
   height: 90vh;
-  object-fit: cover;
-  ${mobile({ height: "40vh" })}
+  object-fit: contain;
+  ${mobile({ height: "50vh" })}
 `;
 
 const InfoContainer = styled.div`
@@ -40,6 +40,8 @@ const InfoContainer = styled.div`
 
 const Title = styled.h1`
   font-weight: 200;
+  ${mobile({ fontSize: "30px" })}
+
 `;
 
 const Desc = styled.p`
@@ -50,6 +52,8 @@ const Price = styled.span`
   font-weight: 100;
   font-size: 40px;
   margin: 5px 0px;
+  ${mobile({ fontSize: "24px" })}
+
 `;
 
 const FilterContainer = styled.div`
@@ -68,18 +72,25 @@ const Filter = styled.div`
 const FilterTitle = styled.span`
   font-size: 20px;
   font-weight: 200;
+  ${mobile({ fontSize: "15px" })}
+
 `;
 
-const FilterColor = styled.div`
+const FilterColor = styled.button`
   width: 20px;
   height: 20px;
   border-radius: 50%;
   background-color: ${(props) => props.color};
   margin: 0px 5px;
   cursor: pointer;
+  border:none;
+  transition: transform 0.5s;
+  ${mobile({ width: "15px", height:"15px" })}
 
-  &:active {
-    border: 1px solid green;
+
+  &:focus {
+    border: 3px solid #1b0303;
+    transform: scale(1.3);
   }
 `;
 
@@ -183,14 +194,20 @@ const Error = styled.p`
 
 const LastBidder = styled.h2`
   margin: 5px 12px 2px;
+  ${mobile({ fontSize: "20px" })}
+
 `;
 
+const ErrorBuyNow = styled.p`
+  color: red;
+  padding-top: 10px;
+`;
 const Product = () => {
   const location = useLocation();
   const id = location.pathname.split("/")[2];
 
   const [product, setProduct] = useState({});
-  const [quantity, setQuantity] = useState(1);
+  const [quantity] = useState(1);
   const [color, setColor] = useState("");
   const [size, setSize] = useState("");
   const dispatch = useDispatch();
@@ -199,54 +216,56 @@ const Product = () => {
   const [userError, setUserError] = useState(false);
   const [auctionError, setAuctionError] = useState(false);
   const [sameUserError, setSameUserError] = useState(false);
+  const [buyNowErr, setBuyNowErr] = useState(false);
   const [timeCounter, setTimeCounter] = useState("Loading...");
 
   useEffect(() => {
+    let isMounted = true;
     const getProduct = async () => {
-      try {
-        const res = await publicRequest.get("/products/find/" + id);
-        setProduct(res.data);
-      } catch (err) {}
+      if (isMounted) {
+        try {
+          const res = await publicRequest.get("/products/find/" + id);
+          setProduct(res.data);
+        } catch (err) {}
+      }
     };
     getProduct();
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
-  const handleQuantity = (type) => {
-    if (type === "dec") {
-      quantity > 1 && setQuantity(quantity - 1);
-    } else {
-      setQuantity(quantity + 1);
-    }
-  };
+  // const handleQuantity = (type) => {
+  //   if (type === "dec") {
+  //     quantity > 1 && setQuantity(quantity - 1);
+  //   } else {
+  //     setQuantity(quantity + 1);
+  //   }
+  // };
 
   const handleClick = () => {
-    dispatch(addProduct({ ...product, quantity, color, size }));
+    if (color.length > 0 && size.length > 0) {
+      dispatch(addProduct({ ...product, quantity, color, size }));
+    } else setBuyNowErr(true);
   };
 
-  const user = useSelector((state) => state.user.currentUser);
+  let user = "";
+  const check = useSelector((state) => state.user.currentUser);
+  check !== null ? (user = check) : (user = "");
 
-  const handleBid = () => {
+  const handleBid = async () => {
     if (timeCounter !== "THE AUCTION HAS ENDED") {
       if (product.posterUsername !== user.username) {
-        if (user) {
+        if (user !== "") {
           const newBidPut = {
-            title: product.title,
-            desc: product.desc,
-            img: product.img,
-            categories: product.categories,
-            size: product.size,
-            color: product.color,
             bidPrice: newBid,
             bidderUsername: user.username,
-            posterUsername: product.posterUsername,
-            price: product.price,
-            status: product.status,
           };
           if (newBid >= 1.1 * product.bidPrice) {
-            userRequest
+            await publicRequest
               .put(`/products/${product._id}`, newBidPut)
-              .then(setError(false))
-              .then(window.location.reload());
+              .then(setError(false));
+            window.location.reload();
           } else {
             setError(true);
           }
@@ -302,18 +321,28 @@ const Product = () => {
           </FilterContainer>
           <AddContainer>
             <AmountContainer>
-              <Remove
+              {/* <Remove
                 style={{ cursor: "pointer" }}
                 onClick={() => handleQuantity("dec")}
-              />
+              /> */}
               <Amount>{quantity}</Amount>
-              <Add
+              {/* <Add
                 style={{ cursor: "pointer" }}
                 onClick={() => handleQuantity("inc")}
-              />
+              /> */}
             </AmountContainer>
-            <Button onClick={handleClick}>ADD TO CART</Button>
+            {(product.status === "ENDED") &
+            (product.bidderUsername === user.username) ? (
+              <Button onClick={handleClick}>ADD TO CART</Button>
+            ) : (
+              product.status === "ONGOING" && (
+                <Button onClick={handleClick}>ADD TO CART</Button>
+              )
+            )}
           </AddContainer>
+          {buyNowErr && (
+            <ErrorBuyNow>Please select a color and size</ErrorBuyNow>
+          )}
           <BidContainer>
             <Input
               onChange={(e) => setNewBid(e.target.value)}

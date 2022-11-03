@@ -30,7 +30,7 @@ const Title = styled.h1`
 const Top = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   padding: 20px;
 `;
 
@@ -38,6 +38,7 @@ const TopButton = styled.button`
   padding: 10px;
   font-weight: 600;
   cursor: pointer;
+  justify-content: flex-start;
   border: ${(props) => props.type === "filled" && "none"};
   background-color: ${(props) =>
     props.type === "filled" ? "black" : "transparent"};
@@ -50,6 +51,7 @@ const TopTexts = styled.div`
 
 const TopText = styled.span`
   margin: 0px 10px;
+  justify-content: center;
 `;
 
 const Bottom = styled.div`
@@ -205,10 +207,10 @@ const Cart = () => {
   }, [stripeToken, cart.total, navigate, cart]);
 
   const quantity = useSelector((state) => state.cart.quantity);
-  const dispatch = useDispatch()
-  const handleRemove = (index) => {
-    dispatch(removeProduct(index))
-  }
+  const dispatch = useDispatch();
+  const handleRemove = (index, product) => {
+    dispatch(removeProduct({index:index, product:product}));
+  };
   return (
     <Container>
       <Navbar />
@@ -222,30 +224,11 @@ const Cart = () => {
           <TopTexts>
             <TopText>Shopping bag({quantity})</TopText>
           </TopTexts>
-          {user ? (
-            <StripeCheckout
-              name="Lama Shop"
-              image="https://avatars.githubusercontent.com/u/1486366?v=4"
-              billingAddress
-              shippingAddress
-              description="Your total is $20"
-              amount={cart.total * 100}
-              token={onToken}
-              stripeKey={KEY}
-            >
-              <Button>CHECKOUT NOW</Button>
-            </StripeCheckout>
-          ) : (
-            <>
-              <Button onClick={() => setError(true)}>CHECKOUT NOW</Button>
-              {error && <Error>Please Login To Continue..</Error>}
-            </>
-          )}
         </Top>
         <Bottom>
           <Info>
             {cart.products.map((product, index) => (
-              <>
+              <div key={index}>
                 <Product key={index}>
                   <ProductDetail>
                     <Image src={product.img} />
@@ -272,22 +255,28 @@ const Cart = () => {
                       </ProductAmount>
                     </ProductAmountContainer>
                     <ProductPrice>
-                      $ {product.price * product.quantity}
+                      ${" "}
+                      {product.status === "ENDED"
+                        ? product.bidPrice * product.quantity
+                        : product.price * product.quantity}
                     </ProductPrice>
                   </PriceDetail>
                   <DeleteButton>
-                    <Clear style={{cursor:"pointer"}} onClick={handleRemove(index)} />
+                    <Clear
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleRemove(index, product)}
+                    />
                   </DeleteButton>
                 </Product>
                 <Hr />
-              </>
+              </div>
             ))}
           </Info>
           <Summary>
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
             <SummaryItem>
               <SummaryItemText>Subtotal</SummaryItemText>
-              <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
+              <SummaryItemPrice>$ {isNaN(cart.total) ? "0" : cart.total}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Estimated Shipping</SummaryItemText>
@@ -299,15 +288,17 @@ const Cart = () => {
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
+              <SummaryItemPrice>
+                $ {isNaN(cart.total) ? "0" : cart.total}
+              </SummaryItemPrice>
             </SummaryItem>
             {user ? (
               <StripeCheckout
-                name="Lama Shop"
-                image="https://avatars.githubusercontent.com/u/1486366?v=4"
+                name="BidIt"
+                image="https://t3.ftcdn.net/jpg/03/90/81/96/360_F_390819611_6ITIVeTZcHKqpmzYGfNYy5u7q6fJo5kl.jpg"
                 billingAddress
                 shippingAddress
-                description="Your total is $20"
+                description={`Your total is  $${cart.total}`}
                 amount={cart.total * 100}
                 token={onToken}
                 stripeKey={KEY}

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { mobile } from "../responsive";
 import { login } from "../Redux/apiCalls";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   width: 100vw;
@@ -70,11 +70,20 @@ const HomeButton = styled.button`
   margin-bottom: 10px;
 `;
 
-const Link = styled.a`
+const LinkContainer = styled.div`
   margin: 5px 0px;
   font-size: 12px;
-  text-decoration: underline;
   cursor: pointer;
+
+  a {
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.1s;
+
+    &:hover {
+      font-weight: 700;
+    }
+  }
 `;
 
 const Error = styled.span`
@@ -97,6 +106,7 @@ const Login = () => {
     e.preventDefault();
     login(dispatch, { username, password });
   };
+
   return (
     <>
       {" "}
@@ -125,8 +135,9 @@ const Login = () => {
               <HomeButton onClick={() => navigate("/")}>BACK HOME..</HomeButton>
             </ButtonContainer>
             {error && <Error>Something went wrong...</Error>}
-            <Link>DO NOT REMEMBER YOUR PASSWORD?</Link>
-            <Link>CREATE A NEW ACCOUNT</Link>
+            <LinkContainer>
+              <Link to="/register">CREATE A NEW ACCOUNT</Link>
+            </LinkContainer>
           </Form>
         </Wrapper>
       </Container>

@@ -10,10 +10,11 @@ import {
 import React from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
+import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
   display: flex;
-  ${mobile({flexDirection:"column"})}
+  ${mobile({ flexDirection: "column" })}
 `;
 const Left = styled.div`
   flex: 1;
@@ -23,9 +24,9 @@ const Left = styled.div`
 `;
 
 const Logo = styled.h1`
-text-align: center;
-text-decoration: underline;
-text-underline-position: under;
+  text-align: center;
+  text-decoration: underline;
+  text-underline-position: under;
 `;
 
 const Desc = styled.p`
@@ -46,12 +47,17 @@ const SocialIcon = styled.div`
   align-items: center;
   justify-content: center;
   margin-right: 20px;
+  cursor:pointer;
+  transition: 0.5s;
+  &:hover{
+    transform: scale(1.1);
+  }
 `;
 
 const Center = styled.div`
   flex: 1;
   padding: 20px;
-  ${mobile({display:"none"})}
+  ${mobile({ display: "none" })}
 `;
 
 const Title = styled.h3`
@@ -69,11 +75,16 @@ const List = styled.ul`
 const ListItem = styled.li`
   width: 50%;
   margin-bottom: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  &:hover{
+    font-weight: 700;
+  }
 `;
 const Right = styled.div`
   flex: 1;
   padding: 20px;
-  ${mobile({backgroundColor:"#fff8f8"})}
+  ${mobile({ backgroundColor: "#fff8f8" })}
 `;
 
 const ContactItem = styled.div`
@@ -86,6 +97,7 @@ const Payment = styled.img`
 `;
 
 const Footer = () => {
+  const navigate = useNavigate();
   return (
     <Container>
       <Left>
@@ -113,29 +125,34 @@ const Footer = () => {
       <Center>
         <Title>Useful Links</Title>
         <List>
-          <ListItem>Home</ListItem>
-          <ListItem>Cart</ListItem>
-          <ListItem>Man Fashion</ListItem>
-          <ListItem>Woman Fashion</ListItem>
-          <ListItem>Accessories</ListItem>
-          <ListItem>My Account</ListItem>
-          <ListItem>Order Tracking</ListItem>
-          <ListItem>Wishlist</ListItem>
-          <ListItem>Wishlist</ListItem>
-          <ListItem>Terms</ListItem>
+          <ListItem onClick={() => navigate("/")}>Home</ListItem>
+          <ListItem onClick={() => navigate("/cart")}>Cart</ListItem>
+          <ListItem onClick={() => navigate("/products")}>Man Fashion</ListItem>
+          <ListItem onClick={() => navigate("/products")}>
+            Woman Fashion
+          </ListItem>
+          <ListItem onClick={() => navigate("/products")}>Accessories</ListItem>
+          <ListItem onClick={() => navigate("/myauctions")}>
+            My Account
+          </ListItem>
+          <ListItem onClick={() => navigate("/myauctions")}>
+            Order Tracking
+          </ListItem>
+          <ListItem onClick={() => navigate("/cart")}>Wishlist</ListItem>
+          <ListItem onClick={() => navigate("/")}>Terms</ListItem>
         </List>
       </Center>
       <Right>
         <Title>Contact</Title>
         <ContactItem>
-          <Room style={{marginRight:"10px"}}/>
+          <Room style={{ marginRight: "10px" }} />
           622 Dixie Path , South Tobinchester 98336
         </ContactItem>
         <ContactItem>
-          <Phone style={{marginRight:"10px"}}/> +1 234 56 78
+          <Phone style={{ marginRight: "10px" }} /> +1 234 56 78
         </ContactItem>
         <ContactItem>
-          <MailOutline style={{marginRight:"10px"}}/> contact@lama.dev
+          <MailOutline style={{ marginRight: "10px" }} /> contact@bidit-shop
         </ContactItem>
         <Payment src="https://i.ibb.co/Qfvn4z6/payment.png" />
       </Right>

@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Product from "./Product";
-import axios from "axios";
 import { useLocation } from "react-router-dom";
 import Pagination from "./Pagination";
-import './Products.css'
+import "./Products.css";
+import Loader from "./Loader";
+import { publicRequest } from "../requestMethods";
 
 const Container = styled.div`
   padding: 20px;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 `;
 const Products = ({ cat, filters, sort }) => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(8);
+  const [postsPerPage] = useState(12);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -33,18 +37,21 @@ const Products = ({ cat, filters, sort }) => {
 
   useEffect(() => {
     const getProducts = async () => {
-      const products_url = cat
-        ? `http://localhost:5000/api/products?category=${cat}`
-        : "http://localhost:5000/api/products";
+      const products_url = cat ? `products?search=${cat}` : "products";
       try {
         setLoading(true);
-        const res = await axios.get(products_url);
-        setProducts(res.data);
-        setLoading(false);
+        const res = await publicRequest(products_url);
+        if (res.data) {
+          setProducts(res.data);
+          setLoading(false);
+          if (products.length > 0) {
+            setError(false);
+          } else setError(true);
+        }
       } catch (err) {}
     };
     getProducts();
-  }, [cat]);
+  }, [cat, products.length]);
 
   useEffect(() => {
     filters
@@ -56,7 +63,7 @@ const Products = ({ cat, filters, sort }) => {
           )
         )
       : location.pathname === "/"
-      ? setFilteredProducts(products.slice(0, 8))
+      ? setFilteredProducts(products.slice(0, 12))
       : setFilteredProducts(products);
   }, [filters, products, location]);
 
@@ -79,14 +86,16 @@ const Products = ({ cat, filters, sort }) => {
     <>
       {loading ? (
         <Container>
-          Loading...
+          <Loader />
         </Container>
       ) : (
         <Container>
           <>
-            {currentPosts.map((item) => (
-              <Product item={item} key={item._id} />
-            ))}
+            {!error ? (
+              currentPosts.map((item) => <Product item={item} key={item._id} />)
+            ) : (
+              <div>No products found..</div>
+            )}
           </>
           {location.pathname === "/" ? null : (
             <div>

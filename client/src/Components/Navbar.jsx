@@ -3,12 +3,13 @@ import {
   Add,
   DashboardRounded,
   ExitToApp,
+  PagesRounded,
   Search,
   ShoppingCartOutlined,
   VerifiedUser,
   VpnKey,
 } from "@material-ui/icons";
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
 import { useSelector } from "react-redux";
@@ -27,14 +28,14 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  ${mobile({ padding: "10px 0px" })}
+  ${mobile({ padding: "10px 0px", justifyContent: "flex-end" })}
 `;
 
 const Left = styled.div`
   flex: 0.5;
   display: flex;
   align-items: center;
-  ${mobile({ justifyContent: "center" })}
+  ${mobile({ justifyContent: "flex-start" })}
 `;
 
 const Language = styled.div`
@@ -43,43 +44,73 @@ const Language = styled.div`
   ${mobile({ display: "none" })}
 `;
 
-const SearchContainer = styled.div`
+const SearchContainer = styled.form`
   border: 0.5px solid lightgray;
   display: flex;
   align-items: center;
   margin-left: 25px;
   padding: 5px;
-  ${mobile({ display: "none" })}
+  ${mobile({ marginLeft: "5px" })}
+
+  .hide {
+    ${mobile({ display: "none" })}
+  }
+  .show {
+    ${mobile({ display: "flex" })}
+  }
+
+  svg {
+    color: gray;
+    &:hover {
+      color: blue;
+    }
+  }
 `;
 
 const Input = styled.input`
   border: none;
-  ${mobile({ width: "50px" })}
+  ${mobile({ width: "100px" })}
+
+  &:focus {
+    outline: none;
+    border: none;
+  }
 `;
 
 const Center = styled.div`
   flex: 3;
   text-align: center;
-  ${mobile({ flex: 1 })}
+  ${mobile({ flex: 2 })}
+
+  .hide {
+    ${mobile({ display: "none" })}
+  }
 `;
 
 const Logo = styled.h1`
   font-weight: bold;
   cursor: pointer;
-  ${mobile({ fontSize: "24px", marginLeft: "50px" })}
+  ${mobile({ fontSize: "20px", marginLeft: "0px" })}
 `;
 const Right = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  ${mobile({ flex: 2, justifyContent: "center" })}
+  ${mobile({ flex: 1, justifyContent: "flex-end", marginRight: 10 })}
 `;
 
 const MenuItem = styled.div`
   font-size: 14px;
   cursor: pointer;
   margin-left: 25px;
+  transition: all 0.2s;
+  text-align: center;
+
+  &:hover {
+    font-weight: 700;
+    border-bottom: 1px solid gray;
+  }
   ${mobile({ fontSize: "12px", marginLeft: "10px" })}
   ${mobile({ display: "none" })}
 `;
@@ -97,26 +128,53 @@ const MenuText = styled.div`
   ${mobile({ display: "none" })}
 `;
 
-const PhoneIcon = styled.span`
+const PhoneIcon = styled.button`
   align-items: center;
   justify-content: center;
   flex-direction: column;
   cursor: pointer;
-  margin: 0px 10px;
+  margin: 0px 5px;
   display: none;
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+
+  &:focus {
+    color: red;
+  }
   ${mobile({ display: "flex" })}
+
+  .hide {
+    ${mobile({ display: "none" })}
+  }
+
+  svg {
+    font-size: 18px;
+  }
 `;
 const PhoneIconText = styled.span`
   margin-top: 5px;
-  font-size: 8px;
+  font-size: 7px;
   font-weight: 700;
+  text-align: center;
 `;
 
 const Navbar = () => {
   const quantity = useSelector((state) => state.cart.quantity);
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.currentUser);
+  const [search, setSearch] = useState("");
+  const [mobileInput, setMobileInput] = useState(false);
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    navigate(`/products/${search}`);
+    setSearch("");
+  };
   const handleLogout = async () => {
     localStorage.removeItem("logged");
     localStorage.removeItem("persist:root");
@@ -128,9 +186,17 @@ const Navbar = () => {
       <Wrapper>
         <Left>
           <Language>EN</Language>
-          <SearchContainer>
-            <Input placeholder="Search.." autoFocus />
-            <Search style={{ color: "gray", fontSize: 16 }} />
+          <SearchContainer onSubmit={handleSearch}>
+            <Input
+              className={mobileInput ? "show" : "hide"}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search.."
+              value={search}
+            />
+            <Search
+              onClick={() => setMobileInput(!mobileInput)}
+              style={{ fontSize: "16px", cursor: "pointer" }}
+            />
           </SearchContainer>
           {user && (
             <>
@@ -138,18 +204,32 @@ const Navbar = () => {
                 DASHBOARD
               </MenuItem>
               <PhoneIcon onClick={() => navigate("/myauctions")}>
-                <DashboardRounded />
-                <PhoneIconText>DASHBOARD</PhoneIconText>
+                <DashboardRounded className={mobileInput ? "hide" : "show"} />
+                <PhoneIconText className={mobileInput ? "hide" : "show"}>
+                  DASHBOARD
+                </PhoneIconText>
               </PhoneIcon>
             </>
           )}
         </Left>
         <Center>
-          <Logo onClick={() => navigate("/")}>BidIt</Logo>
+          <Logo
+            className={mobileInput ? "hide" : "show"}
+            onClick={() => navigate("/")}
+          >
+            BidIt
+          </Logo>
         </Center>
         <Right>
           {!user ? (
             <>
+              <MenuItem onClick={() => navigate("/products")}>
+                AUCTIONS
+              </MenuItem>
+              <PhoneIcon onClick={() => navigate("/products")}>
+                <PagesRounded />
+                <PhoneIconText>PRODUCTS</PhoneIconText>
+              </PhoneIcon>
               <MenuItem onClick={() => navigate("/register")}>
                 REGISTER
               </MenuItem>
@@ -167,10 +247,17 @@ const Navbar = () => {
           ) : (
             <>
               <MenuText>WELCOME {user.username.toUpperCase()}</MenuText>
-              <MenuItem onClick={() => navigate("/auction")}>AUCTIONS</MenuItem>
+              <MenuItem onClick={() => navigate("/auction")}>POST</MenuItem>
               <PhoneIcon onClick={() => navigate("/auction")}>
                 <Add />
-                <PhoneIconText>AUCTIONS</PhoneIconText>
+                <PhoneIconText>POST</PhoneIconText>
+              </PhoneIcon>
+              <MenuItem onClick={() => navigate("/products")}>
+                AUCTIONS
+              </MenuItem>
+              <PhoneIcon onClick={() => navigate("/products")}>
+                <PagesRounded />
+                <PhoneIconText>PRODUCTS</PhoneIconText>
               </PhoneIcon>
               <MenuItem onClick={handleLogout}>LOGOUT</MenuItem>
               <PhoneIcon onClick={handleLogout}>

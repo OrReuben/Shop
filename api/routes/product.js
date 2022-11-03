@@ -7,7 +7,7 @@ const {
 
 const router = require("express").Router();
 
-router.post("/", verifyToken, async (req, res) => {
+router.post("/", async (req, res) => {
   const newProduct = new Product(req.body);
 
   try {
@@ -18,7 +18,7 @@ router.post("/", verifyToken, async (req, res) => {
   }
 });
 
-router.put("/:id", verifyToken, async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
@@ -33,7 +33,7 @@ router.put("/:id", verifyToken, async (req, res) => {
   }
 });
 
-router.delete("/:id", verifyToken, async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
     res.status(200).json("Product has been deleted...");
@@ -77,27 +77,34 @@ router.get("/gets/:username", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   const qNew = req.query.new;
-  const qCategory = req.query.category;
+  const qSearch = req.query.search;
   try {
     let products;
-
     if (qNew) {
       products = await Product.find().sort({ createAt: -1 }).limit(1);
-    } else if (qCategory) {
-      products = await Product.find({
-        categories: {
-          $in: [qCategory],
-        },
-      });
+    } else if (qSearch) {
+      const search = (data) => {
+         return data.filter(
+          (item) =>
+            item.title.toLowerCase().includes(qSearch) ||
+            item.desc.toLowerCase().includes(qSearch) ||
+            item.categories[0]?.toLowerCase().includes(qSearch) ||
+            item.categories[1]?.toLowerCase().includes(qSearch) ||
+            item.categories[2]?.toLowerCase().includes(qSearch) ||
+            item.categories[3]?.toLowerCase().includes(qSearch)
+        );
+      };
+      products = await Product.find({})
+      products = search(products)
     } else {
       products = await Product.find();
     }
 
-    res.status(200).json(products);
+   return res.status(200).json(products);
   } catch (err) {
-    res.status(500).json(err);
+   return res.status(500).json(err);
   }
 });
 

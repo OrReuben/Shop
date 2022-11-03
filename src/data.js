@@ -3,21 +3,21 @@ export const sliderItems = [
     id:1,
     img: "https://www.kindpng.com/picc/m/127-1277774_cara-delevingne-transparent-background-transparent-background-fashion-model.png",
     title:"SUMMER SALE",
-    desc:"DON'T COMPROMISE ON STYLE! GET FLAT 30% OFF FOR NEW ARRIVALS.",
+    desc: "ELIT FINIBUS FINIBUS LACINIA, FELIS NEQUE ULTRICES NIBH, ELEIFEND SCELERISQUE AUGUE URNA VULPUTATE LEO.",
     bg:"f5fafd"
 },
 {
     id:2,
     img: "https://www.pngkey.com/png/detail/23-232092_model-png-image-with-transparent-background-model.png",
     title:"AUTUMN COLLECTION",
-    desc:"DON'T COMPROMISE ON STYLE! GET FLAT 30% OFF FOR NEW ARRIVALS.",
+    desc:"ELIT FINIBUS FINIBUS LACINIA, FELIS NEQUE ULTRICES NIBH, ELEIFEND SCELERISQUE AUGUE URNA VULPUTATE LEO.",
     bg:"fcf1ed"
 },
 {
     id:3,
     img: "https://www.pngitem.com/pimgs/m/275-2757121_red-dress-fashion-transparent-background-model-png-png.png",
     title:"LOUNGEWEAR LOVE",
-    desc:"DON'T COMPROMISE ON STYLE! GET FLAT 30% OFF FOR NEW ARRIVALS.",
+    desc:"ELIT FINIBUS FINIBUS LACINIA, FELIS NEQUE ULTRICES NIBH, ELEIFEND SCELERISQUE AUGUE URNA VULPUTATE LEO.",
     bg:"fbf0f4"
 },
 ]

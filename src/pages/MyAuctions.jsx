@@ -77,6 +77,7 @@ const DashboardTableContent = styled.td`
 const TableImage = styled.img`
   width: 100px;
   height: 90px;
+  object-fit: contain;
   ${mobile({ width: "35px", height: "30px" })}
 `;
 const TableProduct = styled.h4``;

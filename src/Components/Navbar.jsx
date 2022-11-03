@@ -44,26 +44,32 @@ const Language = styled.div`
   ${mobile({ display: "none" })}
 `;
 
-const SearchContainer = styled.div`
+const SearchContainer = styled.form`
   border: 0.5px solid lightgray;
   display: flex;
   align-items: center;
   margin-left: 25px;
   padding: 5px;
-  ${mobile({ display: "none" })}
+  ${mobile({ marginLeft: "5px" })}
+
+  .hide {
+    ${mobile({ display: "none" })}
+  }
+  .show {
+    ${mobile({ display: "flex" })}
+  }
 
   svg {
     color: gray;
-
-    &:hover{
-      color:blue
+    &:hover {
+      color: blue;
     }
   }
 `;
 
 const Input = styled.input`
   border: none;
-  ${mobile({ width: "50px" })}
+  ${mobile({ width: "100px" })}
 
   &:focus {
     outline: none;
@@ -75,19 +81,23 @@ const Center = styled.div`
   flex: 3;
   text-align: center;
   ${mobile({ flex: 2 })}
+
+  .hide {
+    ${mobile({ display: "none" })}
+  }
 `;
 
 const Logo = styled.h1`
   font-weight: bold;
   cursor: pointer;
-  ${mobile({ fontSize: "24px", marginLeft: "10px" })}
+  ${mobile({ fontSize: "20px", marginLeft: "0px" })}
 `;
 const Right = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  ${mobile({ flex: 1, justifyContent: "flex-end", marginRight: 20 })}
+  ${mobile({ flex: 1, justifyContent: "flex-end", marginRight: 10 })}
 `;
 
 const MenuItem = styled.div`
@@ -123,7 +133,7 @@ const PhoneIcon = styled.button`
   justify-content: center;
   flex-direction: column;
   cursor: pointer;
-  margin: 0px 7px;
+  margin: 0px 5px;
   display: none;
   background: none;
   color: inherit;
@@ -138,8 +148,12 @@ const PhoneIcon = styled.button`
   }
   ${mobile({ display: "flex" })}
 
+  .hide {
+    ${mobile({ display: "none" })}
+  }
+
   svg {
-    font-size: 20px;
+    font-size: 18px;
   }
 `;
 const PhoneIconText = styled.span`
@@ -154,10 +168,12 @@ const Navbar = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user.currentUser);
   const [search, setSearch] = useState("");
+  const [mobileInput, setMobileInput] = useState(false);
 
-  const handleSearch = () => {
+  const handleSearch = (e) => {
+    e.preventDefault();
     navigate(`/products/${search}`);
-    setSearch('')
+    setSearch("");
   };
   const handleLogout = async () => {
     localStorage.removeItem("logged");
@@ -170,14 +186,17 @@ const Navbar = () => {
       <Wrapper>
         <Left>
           <Language>EN</Language>
-          <SearchContainer>
+          <SearchContainer onSubmit={handleSearch}>
             <Input
+              className={mobileInput ? "show" : "hide"}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search.."
               value={search}
-              autoFocus
             />
-            <Search onClick={handleSearch} style={{fontSize:"16px", cursor:"pointer"}}/>
+            <Search
+              onClick={() => setMobileInput(!mobileInput)}
+              style={{ fontSize: "16px", cursor: "pointer" }}
+            />
           </SearchContainer>
           {user && (
             <>
@@ -185,14 +204,21 @@ const Navbar = () => {
                 DASHBOARD
               </MenuItem>
               <PhoneIcon onClick={() => navigate("/myauctions")}>
-                <DashboardRounded />
-                <PhoneIconText>DASHBOARD</PhoneIconText>
+                <DashboardRounded className={mobileInput ? "hide" : "show"} />
+                <PhoneIconText className={mobileInput ? "hide" : "show"}>
+                  DASHBOARD
+                </PhoneIconText>
               </PhoneIcon>
             </>
           )}
         </Left>
         <Center>
-          <Logo onClick={() => navigate("/")}>BidIt</Logo>
+          <Logo
+            className={mobileInput ? "hide" : "show"}
+            onClick={() => navigate("/")}
+          >
+            BidIt
+          </Logo>
         </Center>
         <Right>
           {!user ? (

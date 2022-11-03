@@ -70,7 +70,7 @@ const HomeButton = styled.button`
   margin-bottom: 10px;
 `;
 
-const LinkContainer = styled.a`
+const LinkContainer = styled.div`
   margin: 5px 0px;
   font-size: 12px;
   cursor: pointer;

@@ -134,8 +134,8 @@ const Auction = () => {
   const [categories, setCategories] = useState([]);
   const [size, setSize] = useState([]);
   const [color, setColor] = useState([]);
-  const [bidPrice, setBidPrice] = useState("");
-  const [price, setPrice] = useState("");
+  const [bidPrice, setBidPrice] = useState(0);
+  const [price, setPrice] = useState(0);
   const [endAuction, setEndAuction] = useState("");
   const user = useSelector((state) => state.user.currentUser);
   const [validationError, setValidationError] = useState({});
@@ -184,16 +184,16 @@ const Auction = () => {
         status: true,
         messege: "Image link must be valid!",
       });
-    } else if (bidPrice.length !== 0 && bidPrice > price) {
-      setValidationError({
-        status: true,
-        messege: "Starting bid price must be smaller than the buy now price!",
-      });
-    } else if (price.length !== 0 && price < bidPrice) {
-      setValidationError({
-        status: true,
-        messege: "Buy now price must be higher than the starting bid price!",
-      });
+      // } else if (bidPrice.length !== 0 && bidPrice > price) {
+      //   setValidationError({
+      //     status: true,
+      //     messege: "Starting bid price must be smaller than the buy now price!",
+      //   });
+      // } else if (price.length !== 0 && price < bidPrice) {
+      //   setValidationError({
+      //     status: true,
+      //     messege: "Buy now price must be higher than the starting bid price!",
+      //   });
     } else if (endTimeInMS < TimeInMS) {
       setValidationError({
         status: true,
@@ -229,9 +229,7 @@ const Auction = () => {
         timeLeft,
         status: "ONGOING",
       };
-      publicRequest
-        .post("/products", newPost)
-        .then(() => navigate("/products"));
+      publicRequest.post("/products", newPost).then(() => console.log(newPost));
     } catch {}
   };
   return (
@@ -302,9 +300,11 @@ const Auction = () => {
             </Button>
             <HomeButton onClick={() => navigate("/")}>BACK HOME..</HomeButton>
           </ButtonContainer>
-          <div style={{display:"flex", flexDirection:"column"}}>
-          {suggestions.status && <Suggestion>{suggestions.messege}</Suggestion>}
-          {validationError.status && <Error>{validationError.messege}</Error>}
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {suggestions.status && (
+              <Suggestion>{suggestions.messege}</Suggestion>
+            )}
+            {validationError.status && <Error>{validationError.messege}</Error>}
           </div>
         </Form>
       </Wrapper>

@@ -172,7 +172,7 @@ const Navbar = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    navigate(`/products/${search}`);
+    navigate(`/products/${search.toLowerCase()}`);
     setSearch("");
   };
   const handleLogout = async () => {

@@ -16,12 +16,12 @@ import { publicRequest } from "../requestMethods";
 import { mobile } from "../responsive";
 
 const LoadingContainer = styled.div`
-text-align: center;
-width: 90vw;
-display: flex;
-justify-content: center;
-align-content: center;
-`
+  text-align: center;
+  width: 90vw;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+`;
 const Container = styled.div`
   align-items: center;
   display: flex;
@@ -72,7 +72,7 @@ const DashboardTableContent = styled.td`
   text-align: left;
   padding: 8px;
   text-align: center;
-  ${mobile({ fontSize: "9px", padding: "8px 2px"  })}
+  ${mobile({ fontSize: "9px", padding: "8px 2px" })}
 `;
 const TableImage = styled.img`
   width: 100px;
@@ -259,7 +259,7 @@ const MyAuctions = () => {
           <DashboardText id="auctions">YOUR AUCTIONS</DashboardText>
           {loading ? (
             <LoadingContainer>
-            <Loader />
+              <Loader />
             </LoadingContainer>
           ) : (
             <DashboardContainer>
@@ -359,7 +359,7 @@ const MyAuctions = () => {
           <DashboardText id="win">AUCTIONS YOU'VE BID</DashboardText>
           {loadingBids ? (
             <LoadingContainer>
-            <Loader />
+              <Loader />
             </LoadingContainer>
           ) : (
             <DashboardContainer>

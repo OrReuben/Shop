@@ -19,7 +19,7 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  ${mobile({ height: "auto", padding: "10px 0px" })}
+  ${mobile({ padding: "10px 0px" })}
 `;
 
 const Wrapper = styled.div`

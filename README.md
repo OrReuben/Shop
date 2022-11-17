@@ -64,7 +64,7 @@ All products page can be sorted by whatever you desire and with pagination
 
 Product page with an ability to buy now or bid!
 
-![alt text](https://ibb.co/7t9bGV9)
+![alt text](https://i.postimg.cc/Dz9tbGnt/Responsive-shop.png)
 
 Responsive design and a cart for purchasing!
 

@@ -48,7 +48,7 @@ In the project directory, you can run:
 ## Screenshots <a name="Screenshots"></a>
 log in
 
-![alt text](https://postimg.cc/CBzjc1bd))
+![alt text](https://postimg.cc/CBzjc1bd)
 
 Home page with a fully functioning search engine across the site
 
@@ -56,7 +56,7 @@ Home page with a fully functioning search engine across the site
 
 Quick access categories and products
 
-![alt text](https://i.postimg.cc/Th1ks2TV/products.png)
+![alt text](https://i.postimg.cc/3rCPdW6c/products.png)
 
 All products page can be sorted by whatever you desire and with pagination
 

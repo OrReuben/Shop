@@ -48,7 +48,7 @@ In the project directory, you can run:
 ## Screenshots <a name="Screenshots"></a>
 log in
 
-![alt text]([https://i.postimg.cc/rRDQRjfn/homepage-1.png](https://postimg.cc/CBzjc1bd))
+![alt text](https://postimg.cc/CBzjc1bd))
 
 Home page with a fully functioning search engine across the site
 

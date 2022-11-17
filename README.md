@@ -48,19 +48,19 @@ In the project directory, you can run:
 ## Screenshots <a name="Screenshots"></a>
 log in
 
-![alt text](https://ibb.co/2kvGT0R.png](https://i.postimg.cc/rRDQRjfn/homepage-1.png)
+![alt text](https://i.postimg.cc/rRDQRjfn/homepage-1.png)
 
 Home page with a fully functioning search engine across the site
 
-![alt text](https://ibb.co/2kvGT0R](https://i.postimg.cc/s1LnCF2t/homepage-2.png)
+![alt text](https://i.postimg.cc/s1LnCF2t/homepage-2.png)
 
 Quick access categories and products
 
-![alt text](https://ibb.co/N3c7BnC](https://i.postimg.cc/Th1ks2TV/products.png)
+![alt text](https://i.postimg.cc/Th1ks2TV/products.png)
 
 All products page can be sorted by whatever you desire and with pagination
 
-![alt text](https://ibb.co/DVNJyhQ](https://i.postimg.cc/zBk0XHBw/image.png)
+![alt text](https://i.postimg.cc/zBk0XHBw/image.png)
 
 Product page with an ability to buy now or bid!
 

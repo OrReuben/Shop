@@ -48,11 +48,11 @@ In the project directory, you can run:
 ## Screenshots <a name="Screenshots"></a>
 log in
 
-![alt text](https://postimg.cc/CBzjc1bd)
+![alt text](https://i.postimg.cc/qqLYYZyT/homepage-1.png)
 
 Home page with a fully functioning search engine across the site
 
-![alt text](https://i.postimg.cc/s1LnCF2t/homepage-2.png)
+![alt text](https://i.postimg.cc/zXz4W8YX/homepage-2.png)
 
 Quick access categories and products
 

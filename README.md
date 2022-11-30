@@ -1,4 +1,4 @@
-# Auction site
+# Bidit
 
 In our auction web application you just need to upload your product and thats it!
 whenever the auction ends the winner will be able to purchase his item.
@@ -10,6 +10,7 @@ whenever the auction ends the winner will be able to purchase his item.
 - [How to run](#run)
 - [Screenshots](#Screenshots)
 - [Technologies](#Technologies)
+- [Demo](#Demo)
 - [What next](#next)
 
 
@@ -86,6 +87,9 @@ Responsive design and a cart for purchasing!
    -stripe
    -JWT
    -CryptoJS
+   
+## Demo <a name="Demo"></a> 
+   [Bidit](https://bidit-shop.netlify.app/)
    
 ## What next <a name="next"></a>
 - [x] add an option to repost a product
